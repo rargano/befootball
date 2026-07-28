@@ -6,6 +6,7 @@ const autoRefreshSelect = document.querySelector("#autoRefreshSeconds");
 let autoRefreshTimer = null;
 let currentNewsItems = newsItems;
 let currentRumors = rumors;
+let currentRumorPage = 1;
 let languageMode = localStorage.getItem("befootball-news-language") ?? "th";
 const xJournalists = [
   { name: "Fabrizio Romano", handle: "FabrizioRomano" },
@@ -97,10 +98,11 @@ const api = {
 
 function mapArticle(article) {
   const published = article.published_at ? new Date(article.published_at) : new Date();
+  const inferredLeague = inferArticleLeague(article);
 
   return {
     time: Number.isNaN(published.getTime()) ? "--:--" : published.toLocaleTimeString("th-TH", { hour: "2-digit", minute: "2-digit" }),
-    league: article.league ?? "All",
+    league: article.league ?? inferredLeague,
     title: article.title_th,
     summary: article.summary_th,
     originalTitle: article.title_original ?? article.title_th,
@@ -112,6 +114,18 @@ function mapArticle(article) {
     badge: article.category ?? "news",
     hot: article.category === "transfer",
   };
+}
+
+function inferArticleLeague(article) {
+  const haystack = `${article.title_original ?? article.title_th ?? ""} ${article.summary_original ?? article.summary_th ?? ""}`.toLowerCase();
+  const leagueRules = [
+    ["England", /\b(premier league|championship|efl|fa cup|carabao|arsenal|chelsea|liverpool|man city|manchester city|man united|manchester united|tottenham|spurs|newcastle|aston villa|brighton|brentford|bournemouth|fulham|everton|leeds|sunderland|nottingham forest|crystal palace|wolves|west ham|burnley|norwich|southampton)\b/],
+    ["Spain", /\b(la liga|laliga|real madrid|barcelona|atletico|athletic club|sevilla|valencia|villarreal|real sociedad|betis)\b/],
+    ["Italy", /\b(serie a|inter milan|\binter\b|ac milan|\bmilan\b|juventus|napoli|roma|lazio|atalanta|fiorentina|italy|italian)\b/],
+    ["Germany", /\b(bundesliga|bayern|borussia|dortmund|leverkusen|rb leipzig|eintracht|stuttgart|wolfsburg|germany|german)\b/],
+  ];
+  const match = leagueRules.find(([, pattern]) => pattern.test(haystack));
+  return match?.[0] ?? "All";
 }
 
 function mapRumor(rumor) {
@@ -132,7 +146,8 @@ function renderNews(filter = "All") {
 
   const filtered = filter === "All" ? currentNewsItems : currentNewsItems.filter((item) => item.league === filter);
 
-  newsList.innerHTML = filtered
+  newsList.innerHTML = filtered.length
+    ? filtered
     .map(
       (item) => `
         <article class="news-item">
@@ -146,7 +161,8 @@ function renderNews(filter = "All") {
         </article>
       `,
     )
-    .join("");
+    .join("")
+    : `<article class="news-item"><time class="news-time">-</time><div><h3>ยังไม่มีข่าวในหมวดนี้</h3><p>ข่าว RSS บางชิ้นไม่มีข้อมูลลีกชัดเจน ระบบจะแยกจากชื่อทีม/ลีกเมื่อพบ keyword ที่ตรงกัน</p></div><span class="news-badge">${filter}</span></article>`;
 }
 
 const hotNewsNode = document.querySelector("#hotNews");
@@ -191,10 +207,16 @@ function renderHotNews(items = currentNewsItems) {
 }
 
 const rumorGrid = document.querySelector("#rumorGrid");
+const rumorPagination = document.querySelector("#rumorPagination");
 function renderRumors() {
   if (!rumorGrid) return;
 
-  rumorGrid.innerHTML = currentRumors
+  const pageSize = rumorGrid.classList.contains("rumor-page-grid") ? 18 : currentRumors.length;
+  const totalPages = Math.max(1, Math.ceil(currentRumors.length / pageSize));
+  currentRumorPage = Math.min(Math.max(currentRumorPage, 1), totalPages);
+  const pageItems = currentRumors.slice((currentRumorPage - 1) * pageSize, currentRumorPage * pageSize);
+
+  rumorGrid.innerHTML = pageItems
     .map(
       (rumor) => `
         <article class="rumor-card">
@@ -211,7 +233,22 @@ function renderRumors() {
     )
     .join("");
 
+  renderRumorPagination(totalPages);
   renderXEmbeds();
+}
+
+function renderRumorPagination(totalPages) {
+  if (!rumorPagination) return;
+
+  const links = Array.from({ length: totalPages }, (_, index) => {
+    const page = index + 1;
+    return `<a class="${page === currentRumorPage ? "active" : ""}" href="#" data-rumor-page="${page}">${page}</a>`;
+  });
+  if (currentRumorPage < totalPages) {
+    links.push(`<a href="#" data-rumor-page="${currentRumorPage + 1}">ถัดไป</a>`);
+  }
+
+  rumorPagination.innerHTML = links.join("");
 }
 
 function loadXWidgets() {
@@ -511,12 +548,25 @@ if (leagueFilter) {
 }
 
 document.querySelectorAll("[data-filter-link]").forEach((link) => {
-  link.addEventListener("click", () => {
+  link.addEventListener("click", (event) => {
+    event.preventDefault();
     if (!leagueFilter) return;
     leagueFilter.value = link.dataset.filterLink;
     renderNews(link.dataset.filterLink);
+    document.querySelectorAll("[data-filter-link]").forEach((item) => item.classList.toggle("active", item === link));
   });
 });
+
+if (rumorPagination) {
+  rumorPagination.addEventListener("click", (event) => {
+    const link = event.target.closest("[data-rumor-page]");
+    if (!link) return;
+    event.preventDefault();
+    currentRumorPage = Number(link.dataset.rumorPage) || 1;
+    renderRumors();
+    rumorGrid.scrollIntoView({ behavior: "smooth", block: "start" });
+  });
+}
 
 const refreshNews = document.querySelector("#refreshNews");
 if (refreshNews) {

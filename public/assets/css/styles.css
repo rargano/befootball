@@ -615,6 +615,15 @@ h3 {
   padding: 16px;
 }
 
+.rumor-page-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  align-items: stretch;
+}
+
+.rumor-page-grid .rumor-card {
+  min-height: 190px;
+}
+
 .detail-layout {
   display: grid;
   grid-template-columns: minmax(0, 1fr) 320px;
@@ -1330,12 +1339,16 @@ h3 {
 
   .hero-strip,
   .lead-story,
-  .rumor-grid,
   .x-embed-grid,
   .category-panels,
   .developer-grid,
   .system-section,
   .sidebar {
+    grid-template-columns: 1fr;
+  }
+
+  .rumor-grid,
+  .rumor-page-grid {
     grid-template-columns: 1fr;
   }
 
