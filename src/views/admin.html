@@ -1,10 +1,10 @@
 <!doctype html>
 <html lang="th">
-  <head><meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" /><title>Admin Mock | beFootball</title><link rel="stylesheet" href="../../public/assets/css/styles.css" /></head>
+  <head><meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" /><title>Admin Mock | beFootball</title><link rel="stylesheet" href="/public/assets/css/styles.css" /></head>
   <body>
     <header class="site-header"><div class="container masthead"><a class="brand" href="index.html"><span class="brand-ball">be</span><span><strong>beFootball</strong><small>ข่าวฟุตบอลภาษาไทย</small></span></a><a class="admin-zone-link" href="admin.html">Admin Zone</a></div><nav class="main-nav"><div class="container nav-scroll"><a href="index.html">Public site</a><a class="active" href="admin.html">Dashboard</a><a href="source-manager.html">Source Manager</a><a href="article-detail.html">Article Review</a><a href="rumor-detail.html">Rumor Review</a></div></nav></header>
     <main class="container single-page"><section class="panel page-card"><div class="panel-title"><div><span class="mini-icon green">CMS</span><h1>Admin Dashboard</h1></div></div><div class="admin-board page-grid"><article><small>ข่าวรอแปล</small><strong>24</strong></article><article><small>ข่าวรอตรวจ</small><strong>38</strong></article><article><small>ข่าวลือรอตรวจ</small><strong>12</strong></article><article><small>Source error</small><strong>3</strong></article></div><div class="review-list"><article><span class="news-badge hot">pending_review</span><h3>ตลาดนักเตะเดือด</h3><p>ตรวจ title, summary, source_credit_text ก่อน publish</p><a href="article-detail.html">เปิด review</a></article><article><span class="news-badge">rumor</span><h3>กองหน้าโปรตุเกสถูกเชื่อมโยง</h3><p>ตรวจ risk flags และ confidence score</p><a href="rumor-detail.html">เปิด review</a></article><article><span class="news-badge">source_setup</span><h3>เชื่อมแหล่งข้อมูลจริง</h3><p>ตั้งค่า RSS, API key และรอบ refresh ของแหล่งข้อมูลก่อนเปิด worker</p><a href="source-manager.html">เปิด Source Manager</a></article></div></section></main>
     <footer class="footer"><div class="container footer-inner"><strong>beFootball</strong><span>Admin prototype</span></div></footer>
-    <script type="module" src="../controllers/ui-controller.js"></script>
+    <script type="module" src="/src/controllers/ui-controller.js"></script>
   </body>
 </html>
