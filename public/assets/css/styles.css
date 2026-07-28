@@ -727,6 +727,34 @@ h3 {
   color: #fff;
 }
 
+.team-tab-panel {
+  display: none;
+  padding: 0 16px 16px;
+}
+
+.team-tab-panel.active {
+  display: block;
+}
+
+.team-tab-panel .news-list,
+.team-tab-panel .fixture-list {
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  overflow: hidden;
+}
+
+.team-rumor-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  padding: 0;
+}
+
+.tab-empty {
+  padding: 16px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--card-soft);
+}
+
 .pagination {
   padding: 14px 15px 18px;
 }
@@ -1348,7 +1376,8 @@ h3 {
   }
 
   .rumor-grid,
-  .rumor-page-grid {
+  .rumor-page-grid,
+  .team-rumor-grid {
     grid-template-columns: 1fr;
   }
 

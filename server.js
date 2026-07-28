@@ -7,6 +7,8 @@ import { extname, join, normalize } from "node:path";
 const PORT = Number(process.env.PORT ?? 4173);
 const ROOT = process.cwd();
 const NEWS_CACHE_MS = 5 * 60 * 1000;
+const NEWS_ITEMS_PER_SOURCE = 20;
+const NEWS_TOTAL_LIMIT = 60;
 const STANDINGS_CACHE_MS = 10 * 60 * 1000;
 const SCOREBOARD_CACHE_MS = 10 * 60 * 1000;
 const BROADCAST_CACHE_MS = 30 * 60 * 1000;
@@ -66,6 +68,10 @@ function success(data) {
 function textBetween(value, tag) {
   const match = value.match(new RegExp(`<${tag}[^>]*>([\\s\\S]*?)<\\/${tag}>`, "i"));
   return cleanText(match?.[1] ?? "");
+}
+
+function firstTextBetween(value, tags) {
+  return tags.map((tag) => textBetween(value, tag)).find(Boolean) ?? "";
 }
 
 function cleanText(value) {
@@ -364,35 +370,45 @@ async function fetchRssNews() {
   });
 
   const results = [];
+  const seen = new Set();
   for (const source of rssSources) {
-    const xml = await fetchText(source.feed_url);
-    const items = xml.match(/<item\b[\s\S]*?<\/item>/gi) ?? [];
+    if (!source.feed_url) continue;
 
-    items.slice(0, 20).forEach((item, index) => {
-      const title = textBetween(item, "title");
-      const originalUrl = textBetween(item, "link");
-      if (!title || !originalUrl) return;
+    try {
+      const xml = await fetchText(source.feed_url);
+      const items = xml.match(/<item\b[\s\S]*?<\/item>/gi) ?? [];
 
-      const publishedAt = new Date(textBetween(item, "pubDate"));
-      results.push({
-        id: results.length + 1,
-        slug: slugify(title),
-        title_th: title,
-        summary_th: textBetween(item, "description"),
-        title_original: title,
-        summary_original: textBetween(item, "description"),
-        category: categoryFromTitle(title),
-        source_credit_text: `สรุปหัวข้อข่าวจาก ${source.name}`,
-        source_name: source.name,
-        source_type: "RSS",
-        original_url: originalUrl,
-        published_at: Number.isNaN(publishedAt.getTime()) ? new Date().toISOString() : publishedAt.toISOString(),
+      items.slice(0, NEWS_ITEMS_PER_SOURCE).forEach((item) => {
+        const title = textBetween(item, "title");
+        const originalUrl = firstTextBetween(item, ["link", "guid"]);
+        const dedupeKey = (originalUrl || title).toLowerCase();
+        if (!title || !originalUrl || seen.has(dedupeKey)) return;
+        seen.add(dedupeKey);
+
+        const publishedAt = new Date(firstTextBetween(item, ["pubDate", "dc:date", "updated"]));
+        const summary = firstTextBetween(item, ["description", "content:encoded"]);
+        results.push({
+          id: results.length + 1,
+          slug: slugify(title),
+          title_th: title,
+          summary_th: summary,
+          title_original: title,
+          summary_original: summary,
+          category: categoryFromTitle(title),
+          source_credit_text: `สรุปหัวข้อข่าวจาก ${source.name}`,
+          source_name: source.name,
+          source_type: "RSS",
+          original_url: originalUrl,
+          published_at: Number.isNaN(publishedAt.getTime()) ? new Date().toISOString() : publishedAt.toISOString(),
+        });
       });
-    });
+    } catch (error) {
+      console.warn(`${source.name} RSS fetch failed: ${error.message}`);
+    }
   }
 
   results.sort((a, b) => b.published_at.localeCompare(a.published_at));
-  newsCache = results.slice(0, 20).map((item, index) => ({ ...item, id: index + 1 }));
+  newsCache = results.slice(0, NEWS_TOTAL_LIMIT).map((item, index) => ({ ...item, id: index + 1 }));
   newsCacheAt = Date.now();
   return newsCache;
 }

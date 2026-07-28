@@ -100,8 +100,8 @@ config/sources/sources.json
 
 | Endpoint | ใช้ทำอะไร | แหล่งข้อมูล |
 | --- | --- | --- |
-| `/api/news?lang=th` | ข่าว RSS แปลไทย | BBC Sport Football RSS + Google Translate fallback |
-| `/api/news?lang=original` | ข่าว RSS ต้นฉบับ | BBC Sport Football RSS |
+| `/api/news?lang=th` | ข่าว RSS แปลไทย | BBC + ESPN + Guardian RSS + Google Translate fallback |
+| `/api/news?lang=original` | ข่าว RSS ต้นฉบับ | BBC + ESPN + Guardian RSS |
 | `/api/rumors` | ข่าวลือ | local JSON fallback ตอนนี้ |
 | `/api/standings/epl` | ตารางคะแนนพรีเมียร์ลีก | ESPN public standings |
 | `/api/fixtures/epl` | โปรแกรมพรีเมียร์ลีก | ESPN public scoreboard |
@@ -114,13 +114,16 @@ config/sources/sources.json
 
 ## แหล่ง RSS/API ที่ดึงจริง
 
-### 1. BBC Sport Football RSS
+### 1. Football news RSS feeds
 
-ใช้สำหรับข่าวฟุตบอลล่าสุด
+ใช้สำหรับข่าวฟุตบอลล่าสุดจากหลายแหล่ง โดย fetch จาก source ที่ `enabled`, `allow_fetch`, `allow_display` และ `type = rss`
 
-```text
-https://feeds.bbci.co.uk/sport/football/rss.xml
-```
+| Source | URL | Status |
+| --- | --- | --- |
+| BBC Sport Football | `https://feeds.bbci.co.uk/sport/football/rss.xml` | enabled |
+| ESPN Soccer | `https://www.espn.com/espn/rss/soccer/news` | enabled |
+| The Guardian Football | `https://www.theguardian.com/football/rss` | enabled |
+| GioScore Football | ยังไม่พบ public RSS official ที่ตอบ 200 | disabled placeholder |
 
 ไฟล์ config:
 
@@ -128,18 +131,21 @@ https://feeds.bbci.co.uk/sport/football/rss.xml
 config/sources/sources.json
 ```
 
-ค่าปัจจุบัน:
+ค่าหลัก:
 
-- `id`: `bbc-sport-football-rss`
-- `name`: `BBC Sport Football`
 - `type`: `rss`
 - `enabled`: `true`
 - `requires_api_key`: `false`
 - `refresh_interval_seconds`: `900`
 - `allow_fetch`: `true`
 - `allow_display`: `true`
-- `allow_translate`: `false` ใน registry เพื่อบอกข้อควรระวังด้านลิขสิทธิ์/เงื่อนไข แต่ server มีโหมดแปล best effort สำหรับ UI ภาษาไทย
-- ต้องมี attribution และ link กลับไปบทความต้นฉบับ
+- ต้องมี attribution และ link กลับไปบทความต้นฉบับตามแต่ละ source
+
+ข้อสังเกต:
+
+- server ดึง 20 ข่าวต่อ source แล้ว dedupe ตาม URL/title
+- รวมสูงสุด 60 ข่าวต่อรอบ cache
+- ถ้า RSS source ใดล่ม จะ log warning และยังแสดงข่าวจาก source อื่นต่อ
 
 ข้อมูลที่ map ออกมา:
 
@@ -342,7 +348,7 @@ public/api/rumors.json
 
 ใช้งานจริงแล้ว:
 
-- ข่าว RSS จาก BBC Sport Football
+- ข่าว RSS จาก BBC Sport Football, ESPN Soccer และ The Guardian Football
 - แปลไทย/ต้นฉบับสำหรับข่าว RSS
 - ตารางคะแนน Premier League จาก ESPN
 - โปรแกรม/ผลบอล Premier League จาก ESPN
@@ -418,7 +424,7 @@ server {
 
 ก่อนเปิดจริงควรทำเพิ่ม:
 
-- เช็ก license/terms ของ BBC RSS และ ESPN public endpoints สำหรับการใช้งานจริงเชิงพาณิชย์
+- เช็ก license/terms ของ BBC RSS, ESPN RSS, Guardian RSS และ ESPN public endpoints สำหรับการใช้งานจริงเชิงพาณิชย์
 - ใช้ translation provider ที่มี contract ชัดเจน ถ้าจะเปิด production จริง
 - เพิ่ม logging/error monitoring
 - เพิ่ม persistent cache หรือ database ถ้าต้องการเก็บข่าวย้อนหลัง

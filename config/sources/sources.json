@@ -17,6 +17,48 @@
       "trust_score": 80
     },
     {
+      "id": "espn-soccer-rss",
+      "name": "ESPN Soccer",
+      "type": "rss",
+      "enabled": true,
+      "requires_api_key": false,
+      "feed_url": "https://www.espn.com/espn/rss/soccer/news",
+      "refresh_interval_seconds": 900,
+      "allowed_use": "Use ESPN soccer RSS headlines with ESPN attribution and link back to the original article.",
+      "allow_fetch": true,
+      "allow_translate": false,
+      "allow_display": true,
+      "trust_score": 78
+    },
+    {
+      "id": "guardian-football-rss",
+      "name": "The Guardian Football",
+      "type": "rss",
+      "enabled": true,
+      "requires_api_key": false,
+      "feed_url": "https://www.theguardian.com/football/rss",
+      "refresh_interval_seconds": 900,
+      "allowed_use": "Use The Guardian football RSS feed with Guardian attribution and link back to the original article.",
+      "allow_fetch": true,
+      "allow_translate": false,
+      "allow_display": true,
+      "trust_score": 82
+    },
+    {
+      "id": "gioscore-football-rss",
+      "name": "GioScore Football",
+      "type": "rss",
+      "enabled": false,
+      "requires_api_key": false,
+      "feed_url": null,
+      "refresh_interval_seconds": 900,
+      "allowed_use": "GioScore public RSS feed was not found. Keep disabled until an official RSS/API URL is confirmed.",
+      "allow_fetch": false,
+      "allow_translate": false,
+      "allow_display": true,
+      "trust_score": 60
+    },
+    {
       "id": "licensed-news-api",
       "name": "Licensed News API",
       "type": "news_api",

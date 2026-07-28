@@ -6,6 +6,7 @@ const autoRefreshSelect = document.querySelector("#autoRefreshSeconds");
 let autoRefreshTimer = null;
 let currentNewsItems = newsItems;
 let currentRumors = rumors;
+let currentFixtureItems = [];
 let currentRumorPage = 1;
 let languageMode = localStorage.getItem("befootball-news-language") ?? "th";
 const xJournalists = [
@@ -513,7 +514,7 @@ function renderLeagueDetail(standingsRows = [], leagueRows = []) {
 }
 
 const teamDetail = document.querySelector("#teamDetail");
-async function renderTeamDetail(rows = []) {
+async function renderTeamDetail(rows = [], fixtureRows = currentFixtureItems) {
   if (!teamDetail) return;
 
   const teamParam = new URLSearchParams(window.location.search).get("team") ?? "arsenal";
@@ -543,7 +544,96 @@ async function renderTeamDetail(rows = []) {
     `;
   }
 
+  renderTeamDetailPanels(team, fixtureRows);
   await renderTeamDetailPlayers(team);
+}
+
+function teamSearchTerms(team) {
+  const aliases = {
+    "man united": ["man united", "manchester united", "utd", "red devils"],
+    "man city": ["man city", "manchester city", "city"],
+    "spurs": ["spurs", "tottenham", "tottenham hotspur"],
+    "c palace": ["c palace", "crystal palace", "palace"],
+    "nottm forest": ["nottm forest", "nottingham forest", "forest"],
+  };
+  const base = [team.name, team.full_name, team.team, team.team_full]
+    .filter(Boolean)
+    .map((value) => value.toLowerCase());
+  return [...new Set([...base, ...(aliases[slugify(team.name).replace(/-/g, " ")] ?? [])])];
+}
+
+function textMatchesTerms(text, terms) {
+  const normalized = text.toLowerCase();
+  return terms.some((term) => term && normalized.includes(term));
+}
+
+function renderTeamDetailPanels(team, fixtureRows = []) {
+  const newsPanel = document.querySelector("#team-news");
+  const rumorPanel = document.querySelector("#team-rumors");
+  const fixturePanel = document.querySelector("#team-fixtures");
+  const terms = teamSearchTerms(team);
+
+  if (newsPanel) {
+    const relatedNews = currentNewsItems
+      .filter((item) => textMatchesTerms(`${item.title} ${item.summary} ${item.originalTitle} ${item.originalSummary}`, terms))
+      .slice(0, 8);
+    const fallbackNews = currentNewsItems.filter((item) => item.league === "England").slice(0, 5);
+    const data = relatedNews.length ? relatedNews : fallbackNews;
+    newsPanel.innerHTML = data.length
+      ? `<div class="news-list static-list">${data.map((item) => `
+        <article class="news-item">
+          <time class="news-time">${item.time}</time>
+          <div>
+            <h3><a href="article-detail.html">${item.title}</a></h3>
+            <p>${item.summary}</p>
+            <span class="credit">${item.source} · Source: <a href="${item.originalUrl}" target="_blank" rel="noopener">${item.sourceName}</a> (${item.sourceType})</span>
+          </div>
+          <span class="news-badge ${item.hot ? "hot" : ""}">${relatedNews.length ? "team" : item.badge}</span>
+        </article>
+      `).join("")}</div>`
+      : `<div class="empty-copy tab-empty">ยังไม่มีข่าวที่เกี่ยวข้องกับทีมนี้</div>`;
+  }
+
+  if (rumorPanel) {
+    const relatedRumors = currentRumors
+      .filter((rumor) => textMatchesTerms(`${rumor.title} ${rumor.summary}`, terms))
+      .slice(0, 8);
+    const data = relatedRumors.length ? relatedRumors : currentRumors.slice(0, 6);
+    rumorPanel.innerHTML = data.length
+      ? `<div class="rumor-grid team-rumor-grid">${data.map((rumor) => `
+        <article class="rumor-card">
+          <span class="status">${rumor.status}</span>
+          <h3><a href="rumor-detail.html">${rumor.title}</a></h3>
+          <p>${rumor.summary}</p>
+          <span class="credit">Source: <a href="${rumor.originalUrl}" target="_blank" rel="noopener">${rumor.sourceName}</a> (${rumor.sourceType})</span>
+          <div class="score-row">
+            <span class="score confidence">Confidence ${rumor.confidence}</span>
+            <span class="score heat">Heat ${rumor.heat}</span>
+          </div>
+        </article>
+      `).join("")}</div>`
+      : `<div class="empty-copy tab-empty">ยังไม่มีข่าวลือสำหรับทีมนี้</div>`;
+  }
+
+  if (fixturePanel) {
+    const relatedFixtures = fixtureRows
+      .filter((match) => textMatchesTerms(`${match.home_team} ${match.away_team}`, terms))
+      .slice(0, 10);
+    fixturePanel.innerHTML = relatedFixtures.length
+      ? `<div class="fixture-list">${relatedFixtures.map((match) => {
+        const scoreline = match.completed ? `${match.home_score} - ${match.away_score}` : match.time;
+        const meta = [match.date_label, match.status, match.league].filter(Boolean).join(" · ");
+        return `
+          <article class="fixture">
+            <strong>${match.home_team}</strong>
+            <span class="scoreline">${scoreline}</span>
+            <strong>${match.away_team}</strong>
+            <small>${meta}</small>
+          </article>
+        `;
+      }).join("")}</div>`
+      : `<div class="empty-copy tab-empty">ยังไม่มีโปรแกรมของทีมนี้ในช่วงวันที่ที่ดึงข้อมูล</div>`;
+  }
 }
 
 async function renderTeamDetailPlayers(team) {
@@ -615,6 +705,22 @@ document.querySelectorAll("[data-filter-link]").forEach((link) => {
     document.querySelectorAll("[data-filter-link]").forEach((item) => item.classList.toggle("active", item === link));
   });
 });
+
+const teamDetailTabs = document.querySelector("#teamDetailTabs");
+if (teamDetailTabs) {
+  teamDetailTabs.addEventListener("click", (event) => {
+    const link = event.target.closest("[data-team-tab]");
+    if (!link) return;
+    event.preventDefault();
+    const targetId = link.dataset.teamTab;
+    teamDetailTabs.querySelectorAll("[data-team-tab]").forEach((tab) => {
+      tab.classList.toggle("active", tab === link);
+    });
+    document.querySelectorAll(".team-tab-panel").forEach((panel) => {
+      panel.classList.toggle("active", panel.id === targetId);
+    });
+  });
+}
 
 if (rumorPagination) {
   rumorPagination.addEventListener("click", (event) => {
@@ -705,12 +811,13 @@ async function loadLiveData(mode = "manual") {
     ]);
     currentNewsItems = liveNews.length ? liveNews : newsItems;
     currentRumors = liveRumors.length ? liveRumors : rumors;
+    currentFixtureItems = liveFixtures;
     renderStandings(liveStandings);
     renderMatchList(fixtureList, liveFixtures);
     renderMonomaxBroadcasts(liveMonomaxBroadcasts);
     renderMatchList(resultsList, liveResults);
     renderTeams(liveTeams);
-    renderTeamDetail(liveTeams);
+    renderTeamDetail(liveTeams, liveFixtures);
     renderPlayers(livePlayers);
     renderLeagues(liveLeagues);
     renderLeagueDetail(liveStandings, liveLeagues);
@@ -718,12 +825,13 @@ async function loadLiveData(mode = "manual") {
     console.warn(`Using local mock data: ${error.message}`);
     currentNewsItems = newsItems;
     currentRumors = rumors;
+    currentFixtureItems = [];
     renderStandings();
     renderMatchList(fixtureList);
     renderMonomaxBroadcasts([]);
     renderMatchList(resultsList);
     renderTeams();
-    renderTeamDetail();
+    renderTeamDetail([], []);
     renderPlayers([]);
     renderLeagues([]);
     renderLeagueDetail();
