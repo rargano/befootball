@@ -681,6 +681,36 @@ h3 {
   font-weight: 700;
 }
 
+.article-highlights {
+  margin: 24px 0;
+  padding: 20px 22px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: rgba(255, 255, 255, 0.025);
+}
+
+.article-highlights h2 {
+  margin: 0 0 12px;
+  font-size: 20px;
+}
+
+.article-highlights ul {
+  display: grid;
+  gap: 10px;
+  margin: 0;
+  padding-left: 22px;
+}
+
+.article-highlights li {
+  padding-left: 4px;
+  color: #d4d4d8;
+  line-height: 1.65;
+}
+
+.article-highlights li::marker {
+  color: var(--red);
+}
+
 .source-box {
   display: grid;
   gap: 6px;

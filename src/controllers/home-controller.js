@@ -556,6 +556,9 @@ function renderArticleDetail(items = currentNewsItems) {
   const breadcrumbTitle = articleDetail.querySelector("#articleBreadcrumbTitle");
   const meta = articleDetail.querySelector("#articleMeta");
   const lead = articleDetail.querySelector("#articleLead");
+  const highlightSummary = articleDetail.querySelector("#articleHighlightSummary");
+  const highlightCategory = articleDetail.querySelector("#articleHighlightCategory");
+  const highlightSource = articleDetail.querySelector("#articleHighlightSource");
   const sourceCredit = articleDetail.querySelector("#articleSourceCredit");
   const originalLink = articleDetail.querySelector("#articleOriginalLink");
   const tag = articleDetail.querySelector("#articleHeroTag");
@@ -567,6 +570,9 @@ function renderArticleDetail(items = currentNewsItems) {
     if (breadcrumbTitle) breadcrumbTitle.textContent = "ไม่พบข่าว";
     if (meta) meta.textContent = "รายการข่าวอาจหมดอายุจากรอบ RSS ล่าสุด";
     if (lead) lead.textContent = "ยังสามารถเปิดบทความจากเว็บไซต์ต้นฉบับได้";
+    if (highlightSummary) highlightSummary.textContent = "รายการข่าวนี้ไม่อยู่ใน RSS รอบล่าสุด จึงไม่มีบทสรุปเพิ่มเติม";
+    if (highlightCategory) highlightCategory.textContent = "หมวดและลีกที่เกี่ยวข้องอาจเปลี่ยนแปลงตามการอัปเดตของแหล่งข่าว";
+    if (highlightSource) highlightSource.textContent = "ตรวจสอบรายละเอียดล่าสุดได้จากลิงก์เว็บไซต์ต้นฉบับ";
     if (sourceCredit) sourceCredit.textContent = "ลิงก์จากรายการข่าวเดิม";
     if (originalLink) {
       originalLink.href = selectedUrl;
@@ -592,6 +598,16 @@ function renderArticleDetail(items = currentNewsItems) {
     meta.textContent = `เผยแพร่ ${dateLabel} เวลา ${article.time} น. | หมวด ${article.badge} | ${article.sourceName}`;
   }
   if (lead) lead.textContent = article.summary;
+  if (highlightSummary) highlightSummary.textContent = `ใจความสำคัญ: ${article.summary}`;
+  if (highlightCategory) {
+    const leagueLabel = article.league && article.league !== "All"
+      ? ` โดยมีเนื้อหาเกี่ยวข้องกับ ${article.league}`
+      : "";
+    highlightCategory.textContent = `ข่าวนี้อยู่ในหมวด ${article.badge}${leagueLabel}`;
+  }
+  if (highlightSource) {
+    highlightSource.textContent = `ติดตามรายละเอียดและความคืบหน้าล่าสุดได้จาก ${article.sourceName}`;
+  }
   if (sourceCredit) sourceCredit.textContent = `${article.source} (${article.sourceType})`;
   if (originalLink) {
     originalLink.href = article.originalUrl;

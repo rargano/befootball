@@ -26,12 +26,142 @@
       "source_type": "Manual",
       "original_url": "https://example.com/source/manual-rumor-note",
       "disclaimer": "ยังไม่มีการยืนยันจากสโมสร"
+    },
+    {
+      "id": 3,
+      "slug": "premier-league-club-goalkeeper-talks",
+      "title_th": "ทีมพรีเมียร์ลีกเริ่มเจรจาตัวแทนผู้รักษาประตูทีมชาติ",
+      "summary_th": "รายงานจากนักข่าวสองรายระบุว่ามีการสอบถามเงื่อนไขเบื้องต้น แต่สโมสรยังไม่ได้ยื่นข้อเสนออย่างเป็นทางการ",
+      "status": "monitoring",
+      "confidence_score": 55,
+      "heat_score": 64,
+      "source_name": "UK Football Desk",
+      "source_type": "RSS",
+      "original_url": "https://example.com/source/goalkeeper-agent-talks",
+      "disclaimer": "รายละเอียดการเจรจายังไม่ได้รับการยืนยันจากสโมสร"
+    },
+    {
+      "id": 4,
+      "slug": "italian-defender-contract-agreement",
+      "title_th": "แนวรับเซเรียอาใกล้บรรลุข้อตกลงสัญญาส่วนตัวกับทีมใหม่",
+      "summary_th": "หลายแหล่งรายงานตรงกันเรื่องเงื่อนไขส่วนตัว เหลือการเจรจาค่าตัวและโบนัสระหว่างสองสโมสร",
+      "status": "reliable",
+      "confidence_score": 76,
+      "heat_score": 79,
+      "source_name": "Italian Transfer Wire",
+      "source_type": "News API",
+      "original_url": "https://example.com/source/serie-a-defender-agreement",
+      "disclaimer": "ดีลยังไม่เสร็จสมบูรณ์จนกว่าสโมสรจะประกาศ"
+    },
+    {
+      "id": 5,
+      "slug": "spanish-winger-loan-option",
+      "title_th": "ปีกลาลีกาได้รับข้อเสนอยืมตัวพร้อมออปชันซื้อขาด",
+      "summary_th": "ต้นสังกัดพร้อมพิจารณาปล่อยยืมหากทีมปลายทางรับผิดชอบค่าเหนื่อยตามสัดส่วนที่กำหนด",
+      "status": "heating_up",
+      "confidence_score": 63,
+      "heat_score": 85,
+      "source_name": "LaLiga Market Monitor",
+      "source_type": "RSS/API",
+      "original_url": "https://example.com/source/laliga-winger-loan",
+      "disclaimer": "โครงสร้างข้อเสนออาจเปลี่ยนแปลงระหว่างการเจรจา"
+    },
+    {
+      "id": 6,
+      "slug": "ligue-one-striker-bid-rejected",
+      "title_th": "สโมสรลีกเอิงปฏิเสธข้อเสนอแรกสำหรับกองหน้าดาวรุ่ง",
+      "summary_th": "ข้อเสนอเปิดโต๊ะยังต่ำกว่ามูลค่าที่ต้นสังกัดตั้งไว้ และยังไม่มีข้อมูลว่าจะมีข้อเสนอรอบใหม่หรือไม่",
+      "status": "monitoring",
+      "confidence_score": 60,
+      "heat_score": 58,
+      "source_name": "French Football Report",
+      "source_type": "News API",
+      "original_url": "https://example.com/source/ligue-one-striker-bid",
+      "disclaimer": "ตัวเลขค่าตัวยังเป็นข้อมูลจากรายงานข่าว"
+    },
+    {
+      "id": 7,
+      "slug": "thai-league-midfielder-extension",
+      "title_th": "สโมสรไทยลีกเร่งต่อสัญญากองกลางตัวหลักหลังมีทีมคู่แข่งสนใจ",
+      "summary_th": "ฝ่ายบริหารยื่นเงื่อนไขใหม่ให้นักเตะพิจารณา ขณะที่การพูดคุยกับทีมอื่นยังไม่มีเอกสารยืนยัน",
+      "status": "heating_up",
+      "confidence_score": 58,
+      "heat_score": 73,
+      "source_name": "Thai Football Update",
+      "source_type": "Manual Review",
+      "original_url": "https://example.com/source/thai-league-contract-update",
+      "disclaimer": "อยู่ระหว่างตรวจสอบกับแหล่งข่าวในประเทศ"
+    },
+    {
+      "id": 8,
+      "slug": "bundesliga-fullback-medical",
+      "title_th": "แบ็กบุนเดสลีกาผ่านขั้นตอนตรวจร่างกายก่อนเปิดตัว",
+      "summary_th": "สโมสรยืนยันกำหนดการตรวจร่างกายและอยู่ระหว่างจัดทำเอกสารขั้นสุดท้ายก่อนประกาศอย่างเป็นทางการ",
+      "status": "confirmed",
+      "confidence_score": 92,
+      "heat_score": 88,
+      "source_name": "Club Official Channel",
+      "source_type": "Official",
+      "original_url": "https://example.com/source/bundesliga-fullback-medical",
+      "disclaimer": "รอประกาศรายชื่อนักเตะและรายละเอียดสัญญาจากสโมสร"
+    },
+    {
+      "id": 9,
+      "slug": "eredivisie-talent-scouted",
+      "title_th": "สามสโมสรยุโรปส่งแมวมองดูฟอร์มดาวรุ่งเอเรดิวิซี",
+      "summary_th": "มีรายงานการเข้าชมเกมจริง แต่ยังไม่พบหลักฐานเรื่องการติดต่อหรือยื่นข้อเสนอถึงต้นสังกัด",
+      "status": "new",
+      "confidence_score": 34,
+      "heat_score": 49,
+      "source_name": "European Scout Notes",
+      "source_type": "Manual",
+      "original_url": "https://example.com/source/eredivisie-talent-scouted",
+      "disclaimer": "การเข้าชมเกมไม่ได้หมายความว่าจะเกิดการซื้อขาย"
+    },
+    {
+      "id": 10,
+      "slug": "brazil-forward-europe-offer",
+      "title_th": "กองหน้าบราซิลได้รับข้อเสนอจากสองสโมสรในยุโรป",
+      "summary_th": "ตัวแทนนักเตะกำลังเปรียบเทียบแผนการใช้งานและเงื่อนไขโบนัส โดยยังไม่ตัดสินใจเลือกปลายทาง",
+      "status": "reliable",
+      "confidence_score": 71,
+      "heat_score": 81,
+      "source_name": "South America Football Desk",
+      "source_type": "RSS",
+      "original_url": "https://example.com/source/brazil-forward-europe-offers",
+      "disclaimer": "ยังไม่มีการลงนามหรือยืนยันปลายทาง"
+    },
+    {
+      "id": 11,
+      "slug": "veteran-goalkeeper-retirement-denied",
+      "title_th": "ต้นสังกัดปฏิเสธข่าวผู้รักษาประตูจอมเก๋าเตรียมเลิกเล่น",
+      "summary_th": "ฝ่ายประชาสัมพันธ์ระบุว่านักเตะยังอยู่ในแผนฤดูกาลใหม่ และข่าวก่อนหน้านี้ไม่มีข้อมูลสนับสนุนเพียงพอ",
+      "status": "denied",
+      "confidence_score": 95,
+      "heat_score": 42,
+      "source_name": "Club Official Statement",
+      "source_type": "Official",
+      "original_url": "https://example.com/source/goalkeeper-retirement-denied",
+      "disclaimer": "ข่าวลือเดิมถูกปฏิเสธโดยต้นสังกัด"
+    },
+    {
+      "id": 12,
+      "slug": "championship-striker-premier-interest",
+      "title_th": "ดาวยิงแชมเปียนชิพถูกจับตาจากทีมน้องใหม่พรีเมียร์ลีก",
+      "summary_th": "ทีมงานวิเคราะห์ข้อมูลติดตามผลงานต่อเนื่อง แต่กระบวนการยังอยู่ในขั้นจัดทำรายชื่อเป้าหมาย",
+      "status": "monitoring",
+      "confidence_score": 46,
+      "heat_score": 61,
+      "source_name": "English Football Insider",
+      "source_type": "RSS/API",
+      "original_url": "https://example.com/source/championship-striker-interest",
+      "disclaimer": "ยังไม่มีการติดต่ออย่างเป็นทางการระหว่างสโมสร"
     }
   ],
   "pagination": {
     "page": 1,
     "page_size": 20,
-    "total": 2
+    "total": 12
   },
   "error_msg": null
 }
