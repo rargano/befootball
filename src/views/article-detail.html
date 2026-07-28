@@ -1,25 +1,24 @@
 <!doctype html>
 <html lang="th">
-  <head><meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" /><title>ตลาดนักเตะเดือด | beFootball</title><meta name="description" content="รายละเอียดข่าวฟุตบอลพร้อมเครดิตแหล่งข่าว" /><link rel="stylesheet" href="/public/assets/css/styles.css" /></head>
+  <head><meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" /><title>กำลังโหลดข่าว | beFootball</title><meta name="description" content="รายละเอียดข่าวฟุตบอลพร้อมเครดิตแหล่งข่าว" /><link rel="stylesheet" href="/public/assets/css/styles.css" /></head>
   <body>
     <header class="site-header"><div class="container masthead"><a class="brand" href="index.html"><span class="brand-ball">be</span><span><strong>beFootball</strong><small>ข่าวฟุตบอลภาษาไทย</small></span></a><a class="admin-zone-link" href="admin.html">Admin Zone</a></div><nav class="main-nav"><div class="container nav-scroll"><a href="index.html">หน้าแรก</a><a class="active" href="news.html">ข่าวประจำวัน</a><a href="rumors.html">ข่าวลือ</a><a href="fixtures.html">โปรแกรมบอล</a><a href="standings.html">ตารางคะแนน</a><a href="teams.html">ทีม</a><a href="leagues.html">ลีก</a></div></nav></header>
     <main class="container detail-layout">
-      <article class="article-shell">
-        <div class="article-hero"><span class="tag">TRANSFER</span></div>
+      <article class="article-shell" id="articleDetail">
+        <div class="article-hero"><span class="tag" id="articleHeroTag">NEWS</span></div>
         <div class="article-body">
-          <div class="breadcrumb"><a href="index.html">หน้าแรก</a> / <a href="news.html">ข่าวประจำวัน</a> / ตลาดนักเตะ</div>
-          <h1>ตลาดนักเตะเดือด: หลายทีมพรีเมียร์ลีกเร่งปิดดีลก่อนเปิดฤดูกาล</h1>
-          <p class="article-meta">เผยแพร่ 12:44 น. | หมวด Transfer | ผู้ตรวจ: Editor Desk</p>
-          <p class="lead">หลายสโมสรในพรีเมียร์ลีกกำลังเร่งประเมินข้อเสนอและโครงสร้างค่าเหนื่อย ก่อนเข้าสู่ช่วงโปรแกรมอุ่นเครื่องที่เข้มข้นขึ้น</p>
-          <p>ระบบตัวอย่างนี้แสดง flow ข่าวที่ผ่านการดึงข้อมูลจาก source ที่อนุญาต เก็บลง raw article ตรวจ duplicate แล้วส่งให้ AI แปลและสรุปเป็นภาษาไทย ก่อนเข้า queue ให้ทีม admin ตรวจแก้และ approve เพื่อ publish</p>
-          <p>เนื้อหาที่แสดงเป็น mock content สำหรับ prototype โดยจุดสำคัญคือการแสดงเครดิตและลิงก์กลับต้นทางทุกครั้ง รวมถึงแยก summary ออกจาก body เพื่อรองรับ SEO และ social preview ในระบบจริง</p>
-          <aside class="source-box"><strong>เครดิตแหล่งข่าว</strong><span>สรุปจาก News API partner และ club update ที่ได้รับอนุญาตให้แสดงผล</span><a href="#" aria-label="original source">เปิดต้นทาง</a></aside>
-          <div class="entity-links"><a href="team-detail.html">Arsenal</a><a href="league-detail.html">Premier League</a><a href="player-detail.html">Bukayo Saka</a></div>
+          <div class="breadcrumb"><a href="index.html">หน้าแรก</a> / <a href="news.html">ข่าวประจำวัน</a> / <span id="articleBreadcrumbTitle">กำลังโหลด</span></div>
+          <h1 id="articleDetailTitle">กำลังโหลดรายละเอียดข่าว</h1>
+          <p class="article-meta" id="articleMeta">กำลังเชื่อมข้อมูล RSS</p>
+          <p class="lead" id="articleLead">กรุณารอสักครู่</p>
+          <p>หน้านี้แสดงหัวข้อและบทสรุปจาก RSS โดยให้เครดิตและลิงก์กลับไปยังผู้เผยแพร่ต้นฉบับ เนื้อหาบทความฉบับเต็มยังคงอยู่ที่เว็บไซต์ของแหล่งข่าว</p>
+          <aside class="source-box"><strong>เครดิตแหล่งข่าว</strong><span id="articleSourceCredit">กำลังโหลดแหล่งข่าว</span><a id="articleOriginalLink" href="#" target="_blank" rel="noopener">เปิดข่าวต้นฉบับ</a></aside>
         </div>
       </article>
-      <aside class="sidebar"><section class="side-card"><div class="side-title"><h2>ข่าวที่เกี่ยวข้อง</h2><span>MORE</span></div><div class="mini-list"><a href="article-detail.html">สรุปดีลเด่นประจำวัน</a><a href="rumor-detail.html">ข่าวลือกองหน้าโปรตุเกส</a><a href="fixtures.html">โปรแกรมอุ่นเครื่องคืนนี้</a></div></section></aside>
+      <aside class="sidebar"><section class="side-card"><div class="side-title"><h2>ข่าวที่เกี่ยวข้อง</h2><span>MORE</span></div><div class="mini-list" id="articleRelatedList"><span>กำลังโหลดข่าวที่เกี่ยวข้อง</span></div></section></aside>
     </main>
-    <footer class="footer"><div class="container footer-inner"><strong>beFootball</strong><span>Article detail prototype</span></div></footer>
+    <footer class="footer"><div class="container footer-inner"><strong>beFootball</strong><span>RSS article detail</span></div></footer>
+    <script type="module" src="/src/controllers/home-controller.js"></script>
     <script type="module" src="/src/controllers/ui-controller.js"></script>
   </body>
 </html>

@@ -103,7 +103,10 @@ function mapArticle(article) {
   const inferredLeague = inferArticleLeague(article);
 
   return {
+    id: article.id,
+    slug: article.slug,
     time: Number.isNaN(published.getTime()) ? "--:--" : published.toLocaleTimeString("th-TH", { hour: "2-digit", minute: "2-digit" }),
+    publishedAt: Number.isNaN(published.getTime()) ? null : published,
     league: article.league ?? inferredLeague,
     title: article.title_th,
     summary: article.summary_th,
@@ -116,6 +119,10 @@ function mapArticle(article) {
     badge: article.category ?? "news",
     hot: article.category === "transfer",
   };
+}
+
+function articleDetailUrl(item) {
+  return `article-detail.html?url=${encodeURIComponent(item.originalUrl ?? "")}`;
 }
 
 function inferArticleLeague(article) {
@@ -159,7 +166,7 @@ function renderNews(filter = "All") {
         <article class="news-item">
           <time class="news-time">${item.time}</time>
           <div>
-            <h3><a href="article-detail.html">${item.title}</a></h3>
+            <h3><a href="${articleDetailUrl(item)}">${item.title}</a></h3>
             <p>${item.summary}</p>
             <span class="credit">${item.source} · Source: <a href="${item.originalUrl}" target="_blank" rel="noopener">${item.sourceName}</a> (${item.sourceType})</span>
           </div>
@@ -207,7 +214,7 @@ function renderHotNews(items = currentNewsItems) {
     const tag = leadStory.querySelector(".tag");
     if (title) {
       title.textContent = lead.title;
-      title.href = "article-detail.html";
+      title.href = articleDetailUrl(lead);
     }
     if (summary) summary.textContent = lead.summary;
     if (tag) tag.textContent = lead.badge?.toUpperCase?.() ?? "HOT NEWS";
@@ -224,7 +231,7 @@ function renderHotNews(items = currentNewsItems) {
           <span class="thumb ${tone}"></span>
           <div>
             <small>${item.sourceName ?? item.league ?? "RSS"}</small>
-            <h3><a href="article-detail.html">${item.title}</a></h3>
+            <h3><a href="${articleDetailUrl(item)}">${item.title}</a></h3>
           </div>
         </article>
       `;
@@ -529,12 +536,80 @@ function renderLeagueDetail(standingsRows = [], leagueRows = []) {
       .slice(0, 5);
     news.innerHTML = related.length
       ? related.map((item) => `
-        <a href="article-detail.html">
+        <a href="${articleDetailUrl(item)}">
           ${item.title}
           <small>${item.sourceName ?? "RSS"} · ${item.badge}</small>
         </a>
       `).join("")
       : `<span class="empty-copy">ยังไม่มีข่าวที่จับคู่กับลีกนี้</span>`;
+  }
+}
+
+const articleDetail = document.querySelector("#articleDetail");
+function renderArticleDetail(items = currentNewsItems) {
+  if (!articleDetail || !items.length) return;
+
+  const selectedUrl = new URLSearchParams(window.location.search).get("url");
+  const matchedArticle = items.find((item) => item.originalUrl === selectedUrl);
+  const article = selectedUrl ? matchedArticle : items[0];
+  const title = articleDetail.querySelector("#articleDetailTitle");
+  const breadcrumbTitle = articleDetail.querySelector("#articleBreadcrumbTitle");
+  const meta = articleDetail.querySelector("#articleMeta");
+  const lead = articleDetail.querySelector("#articleLead");
+  const sourceCredit = articleDetail.querySelector("#articleSourceCredit");
+  const originalLink = articleDetail.querySelector("#articleOriginalLink");
+  const tag = articleDetail.querySelector("#articleHeroTag");
+  const relatedList = document.querySelector("#articleRelatedList");
+
+  if (!article) {
+    document.title = "ไม่พบข่าว | beFootball";
+    if (title) title.textContent = "ข่าวนี้ไม่อยู่ใน RSS ล่าสุดแล้ว";
+    if (breadcrumbTitle) breadcrumbTitle.textContent = "ไม่พบข่าว";
+    if (meta) meta.textContent = "รายการข่าวอาจหมดอายุจากรอบ RSS ล่าสุด";
+    if (lead) lead.textContent = "ยังสามารถเปิดบทความจากเว็บไซต์ต้นฉบับได้";
+    if (sourceCredit) sourceCredit.textContent = "ลิงก์จากรายการข่าวเดิม";
+    if (originalLink) {
+      originalLink.href = selectedUrl;
+      originalLink.textContent = "เปิดข่าวต้นฉบับ";
+    }
+    if (tag) tag.textContent = "ARCHIVE";
+    if (relatedList) {
+      relatedList.innerHTML = items
+        .slice(0, 5)
+        .map((item) => `<a href="${articleDetailUrl(item)}">${item.title}<small>${item.sourceName}</small></a>`)
+        .join("");
+    }
+    return;
+  }
+
+  document.title = `${article.title} | beFootball`;
+  if (title) title.textContent = article.title;
+  if (breadcrumbTitle) breadcrumbTitle.textContent = article.badge;
+  if (meta) {
+    const dateLabel = article.publishedAt
+      ? article.publishedAt.toLocaleDateString("th-TH", { day: "numeric", month: "long", year: "numeric" })
+      : "ไม่ระบุวันที่";
+    meta.textContent = `เผยแพร่ ${dateLabel} เวลา ${article.time} น. | หมวด ${article.badge} | ${article.sourceName}`;
+  }
+  if (lead) lead.textContent = article.summary;
+  if (sourceCredit) sourceCredit.textContent = `${article.source} (${article.sourceType})`;
+  if (originalLink) {
+    originalLink.href = article.originalUrl;
+    originalLink.textContent = `เปิดข่าวต้นฉบับที่ ${article.sourceName}`;
+  }
+  if (tag) tag.textContent = article.badge?.toUpperCase?.() ?? "NEWS";
+
+  if (relatedList) {
+    const related = items
+      .filter((item) => item.originalUrl !== article.originalUrl)
+      .filter((item) => article.league === "All" || item.league === article.league)
+      .slice(0, 5);
+    const data = related.length
+      ? related
+      : items.filter((item) => item.originalUrl !== article.originalUrl).slice(0, 5);
+    relatedList.innerHTML = data
+      .map((item) => `<a href="${articleDetailUrl(item)}">${item.title}<small>${item.sourceName}</small></a>`)
+      .join("");
   }
 }
 
@@ -609,7 +684,7 @@ function renderTeamDetailPanels(team, fixtureRows = []) {
         <article class="news-item">
           <time class="news-time">${item.time}</time>
           <div>
-            <h3><a href="article-detail.html">${item.title}</a></h3>
+            <h3><a href="${articleDetailUrl(item)}">${item.title}</a></h3>
             <p>${item.summary}</p>
             <span class="credit">${item.source} · Source: <a href="${item.originalUrl}" target="_blank" rel="noopener">${item.sourceName}</a> (${item.sourceType})</span>
           </div>
@@ -684,7 +759,7 @@ const euroList = document.querySelector("#euroList");
 if (euroList) {
   euroList.innerHTML = currentNewsItems
     .slice(0, 4)
-    .map((item) => `<a href="article-detail.html">${item.title}</a>`)
+    .map((item) => `<a href="${articleDetailUrl(item)}">${item.title}</a>`)
     .join("");
 }
 
@@ -835,7 +910,7 @@ if (search) {
               <article class="news-item">
                 <time class="news-time">${item.time}</time>
                 <div>
-                  <h3><a href="article-detail.html">${item.title}</a></h3>
+                  <h3><a href="${articleDetailUrl(item)}">${item.title}</a></h3>
                   <p>${item.summary}</p>
                   <span class="credit">${item.source} · Source: <a href="${item.originalUrl}" target="_blank" rel="noopener">${item.sourceName}</a> (${item.sourceType})</span>
                 </div>
@@ -873,6 +948,7 @@ async function loadLiveData(mode = "manual") {
     renderPlayers(livePlayers);
     renderLeagues(liveLeagues);
     renderLeagueDetail(liveStandings, liveLeagues);
+    renderArticleDetail(currentNewsItems);
   } catch (error) {
     console.warn(`Using local mock data: ${error.message}`);
     currentNewsItems = newsItems;
@@ -887,6 +963,7 @@ async function loadLiveData(mode = "manual") {
     renderPlayers([]);
     renderLeagues([]);
     renderLeagueDetail();
+    renderArticleDetail(currentNewsItems);
   }
 
   renderNews(leagueFilter?.value ?? "All");
@@ -913,5 +990,6 @@ renderTeamDetail();
 renderPlayers();
 renderLeagues();
 renderLeagueDetail();
+renderArticleDetail();
 renderSourceList();
 loadLiveData();
