@@ -1,0 +1,575 @@
+ฉันต้องการสร้างเว็บรายงานข่าวกีฬาฟุตบอลภาษาไทย โดยใช้สถาปัตยกรรมแบบ:
+
+Frontend: Next.js  
+Backend/API/Admin: Yii2  
+Database: MySQL  
+Queue/Cache: Redis  
+Worker: Yii2 Console Command  
+AI: ใช้สำหรับแปล สรุป และจัดหมวดหมู่ข่าว  
+ภาษาเว็บหลัก: ภาษาไทย
+
+เป้าหมายของระบบคือสร้างเว็บข่าวฟุตบอลที่ดึงข้อมูลจากหลายแหล่ง เช่น RSS, API, เว็บไซต์ข่าวที่อนุญาต, sports data API และ X API สำหรับข่าวลือ จากนั้นนำมาสรุป/แปลเป็นภาษาไทย พร้อมให้เครดิตและลิงก์กลับแหล่งต้นทางอย่างถูกต้อง
+
+ห้ามออกแบบระบบให้ scrape ข้อมูลแบบผิดเงื่อนไขการใช้งานของเว็บต้นทาง โดยเฉพาะ X ให้ใช้ X API, embed หรือวิธีที่ได้รับอนุญาตเท่านั้น
+
+---
+
+## 1. Scope ของระบบ
+
+ต้องการระบบหลักดังนี้:
+
+1. เว็บข่าวฟุตบอลภาษาไทย
+2. หน้า News ข่าวทั่วไป
+3. หน้า Rumor ข่าวลือฟุตบอล
+4. หน้า Team รวมข่าวของแต่ละทีม
+5. หน้า Player รวมข่าวของนักเตะแต่ละคน
+6. หน้า League รวมข่าวของแต่ละลีก
+7. หน้า Fixtures โปรแกรมบอล
+8. หน้า Results ผลบอล
+9. หน้า Standings ตารางคะแนน
+10. ระบบ Admin สำหรับตรวจข่าวก่อนเผยแพร่
+11. ระบบ Fetcher ดึงข่าวจากหลาย source
+12. ระบบ AI แปลไทยและสรุปข่าว
+13. ระบบให้เครดิตแหล่งข่าว
+14. ระบบให้คะแนนความน่าเชื่อถือของข่าวลือ
+15. ระบบ sitemap, metadata, SEO และ social preview
+
+---
+
+## 2. Architecture ที่ต้องการ
+
+ออกแบบระบบเป็น 2 ส่วนหลัก:
+
+### Frontend: Next.js
+
+ใช้ Next.js สำหรับ public website เท่านั้น เช่น:
+
+- หน้าแรก
+- ข่าวล่าสุด
+- รายละเอียดข่าว
+- ข่าวลือ
+- รายละเอียดข่าวลือ
+- หน้าทีม
+- หน้านักเตะ
+- หน้าลีก
+- โปรแกรมบอล
+- ผลบอล
+- ตารางคะแนน
+
+Next.js ต้องเน้น:
+
+- SEO
+- Server-side rendering หรือ static generation ตามความเหมาะสม
+- Metadata รายหน้า
+- Open Graph image
+- Sitemap
+- Robots.txt
+- Structured data สำหรับ Article
+- โหลดเร็วบนมือถือ
+- รองรับภาษาไทยดี
+
+### Backend: Yii2
+
+ใช้ Yii2 สำหรับ:
+
+- REST API
+- Admin CMS
+- จัดการข่าว
+- จัดการข่าวลือ
+- จัดการ source
+- จัดการทีม นักเตะ ลีก
+- ระบบตรวจและอนุมัติข่าว
+- Console commands สำหรับ fetch/process/translate
+- Queue jobs
+- Logs
+
+---
+
+## 3. Flow ข่าวทั่วไป
+
+ออกแบบ flow ข่าวทั่วไปดังนี้:
+
+1. Admin เพิ่ม source ข่าว เช่น RSS/API
+2. Yii2 Console Worker ดึงข้อมูลจาก source
+3. เก็บข้อมูลดิบลงตาราง raw_articles
+4. ตรวจ duplicate ด้วย URL, hash และ similarity ของ title
+5. แยกหมวดหมู่ข่าว เช่น transfer, injury, match report, preview, official
+6. ส่งข้อมูลให้ AI แปลและสรุปภาษาไทย
+7. AI ต้องห้ามแต่งข้อมูลเพิ่มจาก source
+8. สร้าง draft article ในระบบ
+9. Admin ตรวจและแก้ไข
+10. Admin approve เพื่อ publish
+11. Next.js ดึงข้อมูลผ่าน Yii2 API มาแสดงหน้าเว็บ
+12. ทุกข่าวต้องมีเครดิตและลิงก์ต้นทาง
+
+---
+
+## 4. Flow ข่าวลือ Rumor
+
+ออกแบบระบบ Rumor แยกจากข่าวปกติ เพราะข่าวลือมีความเสี่ยงสูงกว่า
+
+แหล่งข่าวลืออาจมาจาก:
+
+- X API
+- นักข่าวสายตลาดซื้อขาย
+- official club account
+- league official account
+- RSS/API ของเว็บข่าว
+- manual input จาก admin
+
+Flow:
+
+1. Yii2 Console Worker ดึงโพสต์หรือข้อมูลจาก source ที่อนุญาต
+2. เก็บข้อมูลดิบลง raw_social_posts
+3. กรอง noise และโพสต์ที่ไม่เกี่ยวกับฟุตบอล
+4. Extract entity เช่น team, player, league, manager
+5. Group ข่าวลือที่พูดเรื่องเดียวกัน
+6. คำนวณ confidence_score
+7. คำนวณ heat_score
+8. ให้ AI สรุปเป็นภาษาไทย
+9. สถานะเริ่มต้นเป็น pending_review
+10. Admin ตรวจ
+11. Publish ไปหน้า /rumors
+
+ข่าวลือต้องมีสถานะ:
+
+- new
+- monitoring
+- heating_up
+- reliable
+- confirmed
+- denied
+- expired
+- fake
+- duplicate
+
+ต้องแยกชัดเจนระหว่าง:
+
+- confidence_score = ความน่าเชื่อถือ
+- heat_score = ความมาแรง
+
+ข่าวที่ดังมากไม่จำเป็นต้องจริงมาก
+
+---
+
+## 5. Database Schema ที่ต้องออกแบบ
+
+ช่วยออกแบบ database migration สำหรับ MySQL โดยมีตารางหลักเหล่านี้:
+
+### Core News
+
+- sources
+- raw_articles
+- articles
+- article_sources
+- categories
+- teams
+- players
+- leagues
+- fixtures
+- standings
+- translation_jobs
+- audit_logs
+
+### Rumor
+
+- rumor_sources
+- raw_social_posts
+- rumors
+- rumor_posts
+- rumor_entities
+- rumor_score_logs
+- rumor_review_logs
+
+### User/Admin
+
+- user
+- auth_assignment หรือ RBAC ตาม Yii2
+- admin_logs
+
+แต่ละตารางต้องระบุ:
+
+- field name
+- type
+- index
+- unique key
+- relation
+- จุดประสงค์ของ field สำคัญ
+
+---
+
+## 6. Yii2 Backend Structure
+
+ช่วยออกแบบ folder structure สำหรับ Yii2 Advanced Template หรือโครงสร้างใกล้เคียง โดยแยกเป็น:
+
+common/
+- models/
+- services/
+- components/
+- helpers/
+
+backend/
+- controllers/
+- views/
+
+api/
+- controllers/
+- modules/
+- serializers/
+
+console/
+- controllers/
+- jobs/
+
+ระบบ service ที่ต้องมี:
+
+- NewsFetcherService
+- RssParserService
+- NewsApiService
+- ArticleDedupService
+- TranslationService
+- EntityExtractService
+- CreditService
+- SeoService
+- RumorSourceService
+- XApiRumorFetcher
+- RumorFilterService
+- RumorGroupingService
+- RumorScoringService
+- RumorTranslationService
+- RumorComplianceService
+- RumorPublishingService
+
+---
+
+## 7. Next.js Frontend Structure
+
+ช่วยออกแบบ Next.js App Router structure เช่น:
+
+app/
+- page.tsx
+- news/page.tsx
+- news/[slug]/page.tsx
+- rumors/page.tsx
+- rumors/[slug]/page.tsx
+- team/[slug]/page.tsx
+- player/[slug]/page.tsx
+- league/[slug]/page.tsx
+- fixtures/page.tsx
+- results/page.tsx
+- standings/page.tsx
+- sitemap.ts
+- robots.ts
+
+components/
+- Header.tsx
+- Footer.tsx
+- NewsCard.tsx
+- RumorCard.tsx
+- SourceCredit.tsx
+- ScoreBadge.tsx
+- TeamHeader.tsx
+- PlayerHeader.tsx
+- FixtureList.tsx
+- StandingTable.tsx
+
+lib/
+- api.ts
+- seo.ts
+- format.ts
+- types.ts
+
+ต้องช่วยเขียนตัวอย่าง code สำหรับ:
+
+1. API client ใน Next.js
+2. หน้า /rumors
+3. หน้า /rumors/[slug]
+4. component RumorCard
+5. generateMetadata สำหรับ article/rumor
+6. sitemap.ts
+7. robots.ts
+
+---
+
+## 8. Yii2 API Endpoints
+
+ช่วยออกแบบ Yii2 REST API endpoints ดังนี้:
+
+### Public API
+
+GET /api/news
+GET /api/news/{slug}
+GET /api/news/latest
+GET /api/news/trending
+
+GET /api/rumors
+GET /api/rumors/{slug}
+GET /api/rumors/latest
+GET /api/rumors/trending
+
+GET /api/teams
+GET /api/teams/{slug}
+GET /api/teams/{slug}/news
+GET /api/teams/{slug}/rumors
+
+GET /api/players
+GET /api/players/{slug}
+GET /api/players/{slug}/news
+GET /api/players/{slug}/rumors
+
+GET /api/leagues
+GET /api/leagues/{slug}
+GET /api/leagues/{slug}/news
+GET /api/leagues/{slug}/standings
+
+GET /api/fixtures/today
+GET /api/results/today
+GET /api/standings/{league}
+
+### Admin API
+
+POST /api/admin/articles/{id}/approve
+POST /api/admin/articles/{id}/reject
+POST /api/admin/articles/{id}/refresh-translation
+
+POST /api/admin/rumors/{id}/approve
+POST /api/admin/rumors/{id}/reject
+POST /api/admin/rumors/{id}/mark-confirmed
+POST /api/admin/rumors/{id}/mark-denied
+POST /api/admin/rumors/{id}/mark-fake
+POST /api/admin/rumors/{id}/merge
+POST /api/admin/rumors/{id}/recalculate-score
+POST /api/admin/rumors/{id}/refresh-translation
+
+ทุก API ต้อง return JSON format ที่ consistent เช่น:
+
+{
+  "status": "success",
+  "data": {},
+  "pagination": {},
+  "error_msg": null
+}
+
+ถ้า error ให้ return:
+
+{
+  "status": "fail",
+  "data": null,
+  "error_msg": "ข้อความ error"
+}
+
+---
+
+## 9. Admin CMS
+
+ช่วยออกแบบหน้า Admin สำหรับ Yii2 backend:
+
+### Dashboard
+
+แสดง:
+
+- ข่าวรอแปล
+- ข่าวรอตรวจ
+- ข่าวลือรอตรวจ
+- ข่าวลือมาแรง
+- source error
+- API quota
+- translation failed
+
+### Source Manager
+
+จัดการ:
+
+- source name
+- source type
+- feed url
+- api endpoint
+- trust score
+- allow_fetch
+- allow_translate
+- allow_display
+- status
+- notes
+
+### Article Review
+
+ฟังก์ชัน:
+
+- ดูข่าวต้นฉบับ
+- ดูข่าวภาษาไทย
+- แก้ title
+- แก้ summary
+- แก้ body
+- approve
+- reject
+- refresh translation
+- attach source
+- change category/team/player/league
+
+### Rumor Review
+
+ฟังก์ชัน:
+
+- ดู rumor summary
+- ดู source posts
+- ดู confidence score
+- ดู heat score
+- ดู related entities
+- mark confirmed
+- mark denied
+- mark fake
+- merge duplicate
+- approve
+- reject
+- refresh translation
+
+---
+
+## 10. AI Prompt
+
+ช่วยเขียน prompt สำหรับ AI 2 ชุด:
+
+### Prompt 1: Article Translation
+
+ใช้สำหรับแปลและสรุปข่าวทั่วไปเป็นภาษาไทย
+
+กฎ:
+
+- ห้ามแต่งข้อมูลเพิ่ม
+- ห้ามเปลี่ยน fact
+- ต้องแปลชื่อทีมและนักเตะอย่างระมัดระวัง
+- ถ้าไม่แน่ใจชื่อภาษาไทย ให้คงภาษาอังกฤษไว้
+- ต้องสร้าง title_th, summary_th, body_th
+- ต้องระบุ source_credit_text
+- ต้อง output เป็น JSON
+
+### Prompt 2: Rumor Summary
+
+ใช้สำหรับสรุปข่าวลือจาก X/API/social source
+
+กฎ:
+
+- ห้ามยืนยันข่าวที่ยังไม่มี official confirmation
+- ต้องใช้คำว่า “มีรายงานว่า”, “ถูกเชื่อมโยง”, “ยังไม่ยืนยัน”
+- ต้องแยก fact, rumor, opinion, joke
+- ต้องระบุ risk_flags
+- ต้องเสนอ confidence_score_suggestion
+- ต้อง output เป็น JSON
+
+---
+
+## 11. Scoring System
+
+ช่วยออกแบบระบบคะแนนข่าวลือ:
+
+### confidence_score
+
+ใช้บอกความน่าเชื่อถือ
+
+คำนวณจาก:
+
+- source_trust_score
+- historical_accuracy
+- number_of_independent_sources
+- entity_confidence
+- official_confirmation
+- contradiction_from_reliable_source
+- age_penalty
+
+### heat_score
+
+ใช้บอกความมาแรง
+
+คำนวณจาก:
+
+- post_count
+- engagement
+- source_count
+- velocity
+- freshness
+
+ต้องช่วยเขียน pseudo code และ PHP service class สำหรับ RumorScoringService
+
+---
+
+## 12. Compliance
+
+ระบบต้องมี compliance rule ดังนี้:
+
+1. ทุกข่าวต้องมี original_url
+2. ทุกข่าวต้องมี source_name
+3. ทุกข่าวต้องมี source_credit_text
+4. ห้าม publish ถ้าไม่มี source
+5. ห้ามใช้รูปจาก source โดยไม่มีสิทธิ์
+6. ห้ามดึง full article มาเผยแพร่ใหม่ถ้า source ไม่อนุญาต
+7. X content ต้องใช้ผ่าน API/embed/วิธีที่อนุญาต
+8. ข่าวลือต้องมี disclaimer
+9. ข่าวลือจากแหล่งเดียวต้อง default เป็น monitoring
+10. ข่าวที่มีความเสี่ยงสูงต้อง require human review
+
+ช่วยเขียน RumorComplianceService และ ArticleComplianceService
+
+---
+
+## 13. Cron / Worker
+
+ช่วยออกแบบ console commands และ cron:
+
+- php yii news-fetch/run
+- php yii article-process/run
+- php yii article-translate/run
+- php yii rumor-fetch/x
+- php yii rumor-process/run
+- php yii rumor-score/run
+- php yii rumor-expire/run
+- php yii fixture-sync/run
+- php yii sitemap/generate
+
+พร้อมอธิบายว่าแต่ละ command ทำอะไร
+
+---
+
+## 14. Deployment
+
+ช่วยแนะนำ deployment structure:
+
+- Next.js deploy บน Node server หรือ Vercel
+- Yii2 deploy บน PHP-FPM + Nginx
+- MySQL
+- Redis
+- Queue worker
+- Cron
+- CDN
+- Image storage
+
+ต้องช่วยเขียนตัวอย่าง docker-compose.yml สำหรับ local development ที่มี:
+
+- nextjs
+- php-fpm
+- nginx
+- mysql
+- redis
+
+---
+
+## 15. Output ที่ต้องการจากคุณ
+
+กรุณาตอบแบบเป็นขั้นตอน และสร้าง deliverables ต่อไปนี้:
+
+1. System architecture diagram แบบ text
+2. Database schema
+3. Yii2 folder structure
+4. Next.js folder structure
+5. API endpoint design
+6. AI prompts
+7. Rumor scoring formula
+8. Compliance rules
+9. Example Yii2 code
+10. Example Next.js code
+11. Cron commands
+12. Docker/local development structure
+13. Implementation roadmap 4 phases
+
+ให้เขียนเป็นภาษาไทยทั้งหมด ยกเว้น code และชื่อ technical term ที่ควรใช้ภาษาอังกฤษ
+
+โฟกัสที่โครงสร้างที่นำไปพัฒนาต่อได้จริง ไม่ใช่แค่คำอธิบายกว้าง ๆ

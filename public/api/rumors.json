@@ -1,0 +1,37 @@
+{
+  "status": "success",
+  "data": [
+    {
+      "id": 1,
+      "slug": "portuguese-forward-premier-league-links",
+      "title_th": "กองหน้าโปรตุเกสถูกเชื่อมโยงกับ 2 ทีมพรีเมียร์ลีก",
+      "summary_th": "มีรายงานว่าเอเยนต์ของนักเตะได้รับการติดต่อเบื้องต้น แต่ยังไม่มี official confirmation",
+      "status": "heating_up",
+      "confidence_score": 48,
+      "heat_score": 82,
+      "source_name": "Transfer Desk X List",
+      "source_type": "Official X embed",
+      "original_url": "https://example.com/source/transfer-desk-x-list",
+      "disclaimer": "ข่าวลือนี้ยังไม่ยืนยัน โปรดอ่านเป็นข้อมูลที่อยู่ระหว่างติดตาม"
+    },
+    {
+      "id": 2,
+      "slug": "european-midfielder-saudi-links",
+      "title_th": "มิดฟิลด์ยุโรปมีรายงานว่าถูกจับตาจากลีกซาอุฯ",
+      "summary_th": "ข้อมูลมาจากหลายโพสต์ แต่ยังต้องตรวจความเป็นอิสระของ source",
+      "status": "monitoring",
+      "confidence_score": 41,
+      "heat_score": 67,
+      "source_name": "Manual Admin Input",
+      "source_type": "Manual",
+      "original_url": "https://example.com/source/manual-rumor-note",
+      "disclaimer": "ยังไม่มีการยืนยันจากสโมสร"
+    }
+  ],
+  "pagination": {
+    "page": 1,
+    "page_size": 20,
+    "total": 2
+  },
+  "error_msg": null
+}

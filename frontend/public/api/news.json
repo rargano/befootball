@@ -1,0 +1,23 @@
+{
+  "status": "success",
+  "data": [
+    {
+      "id": 1,
+      "slug": "premier-league-transfer-rush",
+      "title_th": "ตลาดนักเตะเดือด: หลายทีมพรีเมียร์ลีกเร่งปิดดีลก่อนเปิดฤดูกาล",
+      "summary_th": "หลายสโมสรในพรีเมียร์ลีกกำลังเร่งประเมินข้อเสนอและโครงสร้างค่าเหนื่อย",
+      "category": "transfer",
+      "source_name": "BeFootball Source Partner",
+      "source_type": "News API",
+      "original_url": "https://example.com/source/premier-league-transfer-rush",
+      "source_credit_text": "สรุปจาก BeFootball Source Partner และ club update ที่ได้รับอนุญาต",
+      "published_at": "2026-07-27T12:44:00+07:00"
+    }
+  ],
+  "pagination": {
+    "page": 1,
+    "page_size": 20,
+    "total": 1
+  },
+  "error_msg": null
+}

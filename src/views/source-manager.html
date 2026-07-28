@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="th">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Source Manager | beFootball</title>
+    <link rel="stylesheet" href="../../public/assets/css/styles.css" />
+  </head>
+  <body>
+    <header class="site-header"><div class="container masthead"><a class="brand" href="index.html"><span class="brand-ball">be</span><span><strong>beFootball</strong><small>ข่าวฟุตบอลภาษาไทย</small></span></a><a class="admin-zone-link" href="admin.html">Admin Zone</a></div><nav class="main-nav"><div class="container nav-scroll"><a href="index.html">Public site</a><a href="admin.html">Dashboard</a><a class="active" href="source-manager.html">Source Manager</a><a href="article-detail.html">Article Review</a><a href="rumor-detail.html">Rumor Review</a></div></nav>
+    </header>
+    <main class="container single-page">
+      <section class="panel page-card">
+        <div class="panel-title"><div><span class="mini-icon green">API</span><h1>Source Manager</h1></div></div>
+        <div class="source-manager-note"><strong>โหมดปลอดภัย:</strong> external fetch ถูกปิดอยู่จนกว่าจะตั้งค่า API key และยืนยันสิทธิ์ของแต่ละแหล่งข้อมูล</div>
+        <div class="source-config-list">
+          <article><div><strong>Public Football RSS</strong><small>RSS · ทุก 15 นาที · ต้องระบุ URL RSS ที่อนุญาตให้ aggregate</small></div><span class="source-status pending_review">ตั้งค่าก่อนใช้</span></article>
+          <article><div><strong>Licensed News API</strong><small>NewsAPI / GNews / Mediastack · ทุก 15 นาที · ใช้ NEWS_API_KEY</small></div><span class="source-status pending_review">รอ API key</span></article>
+          <article><div><strong>Sports Data API</strong><small>API-Football / Sportmonks / football-data.org · ทุก 5 นาที · ใช้ API_FOOTBALL_KEY</small></div><span class="source-status pending_review">รอ API key</span></article>
+          <article><div><strong>Official X Embeds</strong><small>แสดง timeline ของนักข่าวใน watchlist ผ่าน platform.twitter.com/widgets.js โดยไม่ scrape และไม่ต้องใช้ token</small></div><span class="source-status active">พร้อมใช้</span></article>
+          <article><div><strong>Manual Admin Input</strong><small>แอดมินกรอก source URL และส่งเข้าคิวตรวจเนื้อหา</small></div><span class="source-status active">พร้อมใช้</span></article>
+        </div>
+        <div class="source-manager-note"><strong>ไฟล์ตั้งค่า:</strong> <code>config/sources/sources.json</code> · <strong>คีย์ลับ:</strong> <code>.env</code> · เมื่อเปิด backend worker แล้ว ระบบจะอ่านรอบ refresh จากแต่ละ source โดยอัตโนมัติ</div>
+      </section>
+    </main>
+    <footer class="footer"><div class="container footer-inner"><strong>beFootball</strong><span>Source management prototype</span></div></footer>
+    <script type="module" src="../controllers/ui-controller.js"></script>
+  </body>
+</html>

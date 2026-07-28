@@ -1,0 +1,91 @@
+{
+  "version": 1,
+  "default_external_fetch_enabled": true,
+  "sources": [
+    {
+      "id": "bbc-sport-football-rss",
+      "name": "BBC Sport Football",
+      "type": "rss",
+      "enabled": true,
+      "requires_api_key": false,
+      "feed_url": "https://feeds.bbci.co.uk/sport/football/rss.xml",
+      "refresh_interval_seconds": 900,
+      "allowed_use": "Use BBC Sport RSS headlines with proper BBC Sport attribution and link back to the original article.",
+      "allow_fetch": true,
+      "allow_translate": false,
+      "allow_display": true,
+      "trust_score": 80
+    },
+    {
+      "id": "licensed-news-api",
+      "name": "Licensed News API",
+      "type": "news_api",
+      "enabled": false,
+      "requires_api_key": true,
+      "env_key": "NEWS_API_KEY",
+      "api_endpoint": "https://newsapi.org/v2/everything",
+      "refresh_interval_seconds": 900,
+      "allowed_use": "Use only within the selected provider plan and attribution rules.",
+      "allow_fetch": true,
+      "allow_translate": true,
+      "allow_display": true,
+      "trust_score": 78
+    },
+    {
+      "id": "licensed-sports-data",
+      "name": "Sports Data API",
+      "type": "sports_data",
+      "enabled": false,
+      "requires_api_key": true,
+      "env_key": "API_FOOTBALL_KEY",
+      "api_endpoint": "https://v3.football.api-sports.io",
+      "refresh_interval_seconds": 300,
+      "allowed_use": "Use fixtures, results and standings according to the provider's license.",
+      "allow_fetch": true,
+      "allow_translate": false,
+      "allow_display": true,
+      "trust_score": 90
+    },
+    {
+      "id": "x-approved-list",
+      "name": "X API Approved List",
+      "type": "x_api",
+      "enabled": false,
+      "requires_api_key": true,
+      "env_key": "X_BEARER_TOKEN",
+      "refresh_interval_seconds": 600,
+      "allowed_use": "Use the official X API or permitted embeds; do not scrape X pages.",
+      "allow_fetch": true,
+      "allow_translate": false,
+      "allow_display": true,
+      "trust_score": 65
+    },
+    {
+      "id": "monomax-football-program",
+      "name": "Monomax Football Program",
+      "type": "schedule_page",
+      "enabled": true,
+      "requires_api_key": false,
+      "page_url": "https://www.monomax.me/review/detail/football-program-2026",
+      "refresh_interval_seconds": 1800,
+      "allowed_use": "Display Monomax football program images with proper Monomax attribution and link back to the original article.",
+      "allow_fetch": true,
+      "allow_translate": false,
+      "allow_display": true,
+      "trust_score": 76
+    },
+    {
+      "id": "manual-admin-input",
+      "name": "Manual Admin Input",
+      "type": "manual",
+      "enabled": true,
+      "requires_api_key": false,
+      "refresh_interval_seconds": 0,
+      "allowed_use": "Editors must enter an original source URL and submit content for review.",
+      "allow_fetch": false,
+      "allow_translate": true,
+      "allow_display": true,
+      "trust_score": 70
+    }
+  ]
+}

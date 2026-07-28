@@ -1,0 +1,242 @@
+<!doctype html>
+<html lang="th">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>beFootball | ข่าวฟุตบอล อัปเดตสด ข่าวลือ โปรแกรมบอล</title>
+    <meta
+      name="description"
+      content="beFootball เว็บข่าวฟุตบอลภาษาไทย พร้อมข่าวอัปเดต ข่าวลือ โปรแกรมบอล ผลบอล และ ตารางคะแนน"
+    />
+    <meta property="og:title" content="beFootball | ข่าวฟุตบอลภาษาไทย" />
+    <meta
+      property="og:description"
+      content="ข่าวฟุตบอล อัปเดตสด ข่าวลือ โปรแกรมบอล ผลบอล ตารางคะแนน พร้อมเครดิตแหล่งข่าว"
+    />
+    <meta property="og:type" content="website" />
+    <link rel="stylesheet" href="../../public/assets/css/styles.css" />
+  </head>
+  <body>
+    <div class="utility-bar">
+      <div class="container utility-inner">
+        <span>วันจันทร์ที่ 27 กรกฎาคม 2569</span>
+        <div class="utility-links">
+          <a href="login.html">เข้าสู่ระบบ</a>
+          <a href="login.html">สมัครสมาชิก</a>
+          <a href="admin.html">Admin Zone</a>
+          <a href="#roadmap">เกี่ยวกับระบบ</a>
+        </div>
+      </div>
+    </div>
+
+    <header class="site-header">
+      <div class="container masthead">
+        <a class="brand" href="index.html" aria-label="beFootball home">
+          <span class="brand-ball">be</span>
+          <span>
+            <strong>beFootball</strong>
+            <small>ได้รู้ความเคลื่อนไหว ก่อนเสียงนกหวีด</small>
+          </span>
+        </a>
+        <form class="search" role="search">
+          <input aria-label="ค้นหาข่าว" placeholder="ค้นหาทีม นักเตะ ลีก หรือข่าวลือ" />
+          <button type="submit">ค้นหา</button>
+        </form>
+        <a class="admin-zone-link" href="admin.html">Admin Zone</a>
+      </div>
+
+      <nav class="main-nav" aria-label="เมนูหลัก">
+        <div class="container nav-scroll">
+          <a href="index.html" class="active">หน้าแรก</a>
+          <a href="news.html">ข่าวประจำวัน</a>
+          <a href="rumors.html">ข่าวลือ</a>
+          <a href="results.html">ผลบอลสด</a>
+          <a href="fixtures.html">โปรแกรมบอล</a>
+          <a href="standings.html">ตารางคะแนน</a>
+          <a href="teams.html">ทีม</a>
+          <a href="players.html">นักเตะ</a>
+          <a href="leagues.html">ลีก</a>
+          <a href="admin.html">Admin</a>
+          <a href="developer.html">Developer</a>
+        </div>
+      </nav>
+
+      <nav class="sub-nav" aria-label="หมวดหมู่ข่าว">
+        <div class="container nav-scroll">
+          <a href="#latest" data-filter-link="All">ทั้งหมด</a>
+          <a href="#latest" data-filter-link="England">บอลอังกฤษ</a>
+          <a href="#latest" data-filter-link="Spain">บอลสเปน</a>
+          <a href="#latest" data-filter-link="Italy">บอลอิตาลี</a>
+          <a href="#latest" data-filter-link="Germany">บอลเยอรมัน</a>
+          <a href="#ai">AI Summary</a>
+        </div>
+      </nav>
+    </header>
+
+    <main id="top" class="container layout">
+      <section class="content-column">
+        <section class="hero-strip" aria-label="ข่าวเด่น">
+          <article class="lead-story">
+            <div class="story-photo photo-transfer" role="img" aria-label="นักเตะกำลังยืนในสนามฟุตบอล"></div>
+            <div class="lead-copy">
+              <span class="tag">HOT NEWS</span>
+              <h1><a href="article-detail.html">ตลาดนักเตะเดือด: หลายทีมพรีเมียร์ลีกเร่งปิดดีลก่อนเปิดฤดูกาล</a></h1>
+              <p>
+                ตัวอย่างหน้าแรกแบบเว็บข่าวฟุตบอลจริง มีพื้นที่ข่าวเด่น, ข่าวล่าสุด,
+                ข่าวลือแยกคะแนนความน่าเชื่อถือ และเครดิตแหล่งข่าวชัดเจน
+              </p>
+            </div>
+          </article>
+          <aside class="headline-stack" id="hotNews"></aside>
+        </section>
+
+        <section class="panel" id="latest">
+          <div class="panel-title">
+            <div>
+              <span class="mini-icon">▦</span>
+              <h2>ข่าวอัพเดท</h2>
+            </div>
+            <div class="filter-row">
+              <select id="leagueFilter" aria-label="เลือกลีก">
+                <option>All</option>
+                <option>England</option>
+                <option>Spain</option>
+                <option>Italy</option>
+                <option>Germany</option>
+              </select>
+              <button id="refreshNews" type="button">Refresh</button>
+              <select id="autoRefreshSeconds" aria-label="ตั้งเวลา auto refresh">
+                <option value="0">Auto refresh: ปิด</option>
+                <option value="30">ทุก 30 วิ</option>
+                <option value="60">ทุก 1 นาที</option>
+                <option value="300">ทุก 5 นาที</option>
+              </select>
+            </div>
+          </div>
+          <p class="date-line">วันนี้ - วันจันทร์ที่ 27 ก.ค. 2569 · กำลังโหลดข้อมูลจาก RSS</p>
+          <div class="news-list" id="newsList"></div>
+        </section>
+
+        <section class="panel" id="rumors">
+          <div class="panel-title">
+            <div>
+              <span class="mini-icon red">!</span>
+              <h2>Rumor Watch</h2>
+            </div>
+            <a href="rumor-detail.html">ดูเกณฑ์ข่าวลือ</a>
+          </div>
+          <div class="rumor-grid" id="rumorGrid"></div>
+        </section>
+
+        <section class="category-panels">
+          <article class="panel category-panel">
+            <div class="panel-title compact"><h2>บอลนอก</h2><a href="#latest">อ่านทั้งหมด</a></div>
+            <div class="mini-list" id="euroList"></div>
+          </article>
+        </section>
+
+        <section class="panel blueprint-panel" id="blueprint">
+          <div class="panel-title">
+            <div>
+              <span class="mini-icon green">API</span>
+              <h2>Developer Blueprint</h2>
+            </div>
+            <a href="developer.html">เปิด Developer</a>
+          </div>
+          <div class="developer-grid">
+            <article><strong>Frontend</strong><span>Next.js App Router, SSR/SSG, metadata, sitemap</span></article>
+            <article><strong>Backend</strong><span>JS static server, Yii2 REST API-ready, Admin CMS</span></article>
+            <article><strong>Data</strong><span>RSS feed, mock fallback, future MySQL schema</span></article>
+            <article><strong>AI</strong><span>Translate, summarize, classify, scoring suggestion</span></article>
+          </div>
+        </section>
+      </section>
+
+      <aside class="sidebar">
+        <section class="side-card" id="fixtures">
+          <div class="side-title">
+            <h2>รายการถ่ายทอดสด</h2>
+            <span>LIVE</span>
+          </div>
+          <div class="fixture-list" id="fixtureList"></div>
+        </section>
+
+        <section class="side-card" id="monomaxBroadcasts">
+          <div class="side-title">
+            <h2>ตารางจาก Monomax</h2>
+            <span>MAX</span>
+          </div>
+          <div class="broadcast-list compact" id="monomaxBroadcastList"></div>
+        </section>
+
+        <section class="side-card" id="standings">
+          <div class="side-title">
+            <h2>ตารางคะแนน</h2>
+            <span>EPL</span>
+          </div>
+          <table class="standing-table">
+            <thead>
+              <tr><th>ทีม</th><th>แข่ง</th><th>แต้ม</th></tr>
+            </thead>
+            <tbody id="standingRows"></tbody>
+          </table>
+        </section>
+
+        <section class="side-card" id="admin">
+          <div class="side-title">
+            <h2>Admin Queue</h2>
+            <a href="admin.html">เปิด Admin</a>
+          </div>
+          <div class="admin-stats">
+            <article><small>ข่าวรอตรวจ</small><strong>38</strong></article>
+            <article><small>ข่าวลือรอตรวจ</small><strong>12</strong></article>
+            <article><small>Source error</small><strong>3</strong></article>
+            <article><small>AI failed</small><strong>5</strong></article>
+          </div>
+        </section>
+
+        <section class="side-card" id="sources">
+          <div class="side-title">
+            <h2>Source Monitor</h2>
+            <span>SRC</span>
+          </div>
+          <div class="source-list" id="sourceList"></div>
+        </section>
+      </aside>
+    </main>
+
+    <section class="container system-section" id="ai">
+      <article>
+        <h2>AI Workflow</h2>
+        <p>
+          ข่าวทั่วไปใช้ AI แปลและสรุปโดยห้ามแต่งข้อมูลเพิ่ม ส่วนข่าวลือแยก fact,
+          rumor, opinion และ joke พร้อม risk flags ก่อนส่งเข้า pending review
+        </p>
+      </article>
+      <article id="compliance">
+        <h2>Compliance Gate</h2>
+        <p>
+          ทุกข่าวต้องมี original_url, source_name, source_credit_text และห้ามใช้รูปหรือ
+          full article จากต้นทางโดยไม่มีสิทธิ์ X content ใช้ผ่าน API/embed เท่านั้น
+        </p>
+      </article>
+      <article id="roadmap">
+        <h2>Roadmap 4 Phases</h2>
+        <p>
+          MVP content pipeline, rumor engine, football data, แล้วจึง scale SEO/CDN/monitoring
+          สำหรับ production
+        </p>
+      </article>
+    </section>
+
+    <footer class="footer">
+      <div class="container footer-inner">
+        <strong>beFootball</strong>
+        <span>Static JS + RSS prototype - พร้อมต่อยอดเป็น backend จริง</span>
+      </div>
+    </footer>
+
+    <script type="module" src="../controllers/home-controller.js"></script>
+    <script type="module" src="../controllers/ui-controller.js"></script>
+  </body>
+</html>
