@@ -544,7 +544,19 @@ async function handleApi(req, res, url) {
 }
 
 async function serveStatic(res, pathname) {
-  const target = pathname === "/" ? "/src/views/index.html" : pathname;
+  if (pathname === "/") {
+    res.writeHead(302, { Location: "/src/views/index.html" });
+    res.end();
+    return;
+  }
+
+  const aliases = [
+    { from: /^\/controllers\//, to: "/src/controllers/" },
+    { from: /^\/models\//, to: "/src/models/" },
+    { from: /^\/assets\//, to: "/public/assets/" },
+  ];
+  const alias = aliases.find((item) => item.from.test(pathname));
+  const target = alias ? pathname.replace(alias.from, alias.to) : pathname;
   const normalizedPath = normalize(decodeURIComponent(target)).replace(/^(\.\.[/\\])+/, "");
   let filePath = join(ROOT, normalizedPath);
   let body;
