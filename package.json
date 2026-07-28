@@ -6,7 +6,8 @@
   "scripts": {
     "start": "node server.js",
     "serve": "node server.js",
-    "check": "node --check src/controllers/home-controller.js && node --check src/models/mock-data.js"
+    "check": "node --check server.js && node --check src/controllers/home-controller.js && node --check src/controllers/ui-controller.js && node --check src/models/mock-data.js",
+    "test:smoke": "node scripts/smoke-test.mjs"
   },
   "engines": {
     "node": ">=20"

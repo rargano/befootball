@@ -48,15 +48,15 @@
       "id": "gioscore-football-rss",
       "name": "GioScore Football",
       "type": "rss",
-      "enabled": false,
+      "enabled": true,
       "requires_api_key": false,
-      "feed_url": null,
-      "refresh_interval_seconds": 900,
-      "allowed_use": "GioScore public RSS feed was not found. Keep disabled until an official RSS/API URL is confirmed.",
-      "allow_fetch": false,
+      "feed_url": "https://gioscore.com/rss/matches.xml",
+      "refresh_interval_seconds": 300,
+      "allowed_use": "Use the official GioScore matches and results RSS feed with GioScore attribution and link back to the original item.",
+      "allow_fetch": true,
       "allow_translate": false,
       "allow_display": true,
-      "trust_score": 60
+      "trust_score": 75
     },
     {
       "id": "licensed-news-api",

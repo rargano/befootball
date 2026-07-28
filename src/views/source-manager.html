@@ -12,9 +12,14 @@
     <main class="container single-page">
       <section class="panel page-card">
         <div class="panel-title"><div><span class="mini-icon green">API</span><h1>Source Manager</h1></div></div>
-        <div class="source-manager-note"><strong>โหมดปลอดภัย:</strong> external fetch ถูกปิดอยู่จนกว่าจะตั้งค่า API key และยืนยันสิทธิ์ของแต่ละแหล่งข้อมูล</div>
+        <div class="source-manager-note"><strong>สถานะระบบ:</strong> RSS สาธารณะ 4 แหล่งและข้อมูลฟุตบอล ESPN เปิดใช้งานแล้ว แหล่งที่ต้องใช้ API key ยังคงปิดไว้</div>
         <div class="source-config-list">
-          <article><div><strong>Public Football RSS</strong><small>RSS · ทุก 15 นาที · ต้องระบุ URL RSS ที่อนุญาตให้ aggregate</small></div><span class="source-status pending_review">ตั้งค่าก่อนใช้</span></article>
+          <article><div><strong>BBC Sport Football</strong><small>RSS · ข่าวฟุตบอล · สูงสุด 20 รายการต่อรอบ</small></div><span class="source-status active">พร้อมใช้</span></article>
+          <article><div><strong>ESPN Soccer</strong><small>RSS · ข่าวฟุตบอล · สูงสุด 20 รายการต่อรอบ</small></div><span class="source-status active">พร้อมใช้</span></article>
+          <article><div><strong>The Guardian Football</strong><small>RSS · ข่าวฟุตบอล · สูงสุด 20 รายการต่อรอบ</small></div><span class="source-status active">พร้อมใช้</span></article>
+          <article><div><strong>GioScore Football</strong><small>Official RSS · โปรแกรมและผลการแข่งขัน · สูงสุด 20 รายการต่อรอบ</small></div><span class="source-status active">พร้อมใช้</span></article>
+          <article><div><strong>ESPN Football Data</strong><small>Public endpoint · ตารางคะแนน ทีม โปรแกรม และรายชื่อนักเตะ</small></div><span class="source-status active">พร้อมใช้</span></article>
+          <article><div><strong>Monomax Football Program</strong><small>Official schedule page · ตารางถ่ายทอดสดพร้อมเครดิตต้นทาง</small></div><span class="source-status active">พร้อมใช้</span></article>
           <article><div><strong>Licensed News API</strong><small>NewsAPI / GNews / Mediastack · ทุก 15 นาที · ใช้ NEWS_API_KEY</small></div><span class="source-status pending_review">รอ API key</span></article>
           <article><div><strong>Sports Data API</strong><small>API-Football / Sportmonks / football-data.org · ทุก 5 นาที · ใช้ API_FOOTBALL_KEY</small></div><span class="source-status pending_review">รอ API key</span></article>
           <article><div><strong>Official X Embeds</strong><small>แสดง timeline ของนักข่าวใน watchlist ผ่าน platform.twitter.com/widgets.js โดยไม่ scrape และไม่ต้องใช้ token</small></div><span class="source-status active">พร้อมใช้</span></article>

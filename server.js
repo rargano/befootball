@@ -8,7 +8,6 @@ const PORT = Number(process.env.PORT ?? 4173);
 const ROOT = process.cwd();
 const NEWS_CACHE_MS = 5 * 60 * 1000;
 const NEWS_ITEMS_PER_SOURCE = 20;
-const NEWS_TOTAL_LIMIT = 60;
 const STANDINGS_CACHE_MS = 10 * 60 * 1000;
 const SCOREBOARD_CACHE_MS = 10 * 60 * 1000;
 const BROADCAST_CACHE_MS = 30 * 60 * 1000;
@@ -75,7 +74,7 @@ function firstTextBetween(value, tags) {
 }
 
 function cleanText(value) {
-  return value
+  const cleaned = value
     .replace(/<!\[CDATA\[([\s\S]*?)\]\]>/g, "$1")
     .replace(/<[^>]+>/g, "")
     .replace(/&amp;/g, "&")
@@ -86,6 +85,8 @@ function cleanText(value) {
     .replace(/&gt;/g, ">")
     .replace(/\s+/g, " ")
     .trim();
+
+  return /^(null|undefined|n\/a)$/i.test(cleaned) ? "" : cleaned;
 }
 
 function slugify(value) {
@@ -386,7 +387,8 @@ async function fetchRssNews() {
         seen.add(dedupeKey);
 
         const publishedAt = new Date(firstTextBetween(item, ["pubDate", "dc:date", "updated"]));
-        const summary = firstTextBetween(item, ["description", "content:encoded"]);
+        const summary = firstTextBetween(item, ["description", "content:encoded"])
+          || "อ่านรายละเอียดข่าวฉบับเต็มได้จากแหล่งข่าวต้นฉบับ";
         results.push({
           id: results.length + 1,
           slug: slugify(title),
@@ -408,7 +410,7 @@ async function fetchRssNews() {
   }
 
   results.sort((a, b) => b.published_at.localeCompare(a.published_at));
-  newsCache = results.slice(0, NEWS_TOTAL_LIMIT).map((item, index) => ({ ...item, id: index + 1 }));
+  newsCache = results.map((item, index) => ({ ...item, id: index + 1 }));
   newsCacheAt = Date.now();
   return newsCache;
 }

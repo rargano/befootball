@@ -123,7 +123,7 @@ config/sources/sources.json
 | BBC Sport Football | `https://feeds.bbci.co.uk/sport/football/rss.xml` | enabled |
 | ESPN Soccer | `https://www.espn.com/espn/rss/soccer/news` | enabled |
 | The Guardian Football | `https://www.theguardian.com/football/rss` | enabled |
-| GioScore Football | ยังไม่พบ public RSS official ที่ตอบ 200 | disabled placeholder |
+| GioScore Football | `https://gioscore.com/rss/matches.xml` | enabled |
 
 ไฟล์ config:
 
@@ -144,8 +144,9 @@ config/sources/sources.json
 ข้อสังเกต:
 
 - server ดึง 20 ข่าวต่อ source แล้ว dedupe ตาม URL/title
-- รวมสูงสุด 60 ข่าวต่อรอบ cache
+- รวมรายการจากทุก source โดยไม่ตัด source ท้ายรายการ (ปัจจุบันสูงสุด 80 รายการจาก 4 sources)
 - ถ้า RSS source ใดล่ม จะ log warning และยังแสดงข่าวจาก source อื่นต่อ
+- GioScore feed เป็นข้อมูลผลการแข่งขันและโปรแกรม ไม่ใช่บทความข่าวเชิงบรรณาธิการ
 
 ข้อมูลที่ map ออกมา:
 

@@ -348,7 +348,7 @@ function renderMatchList(node, rows = []) {
     date_label: "",
     status: league,
   }));
-  const data = rows.length ? rows : fallback;
+  const data = rows.length ? rows : node === resultsList ? [] : fallback;
 
   node.innerHTML = data.length
     ? data
@@ -689,17 +689,30 @@ if (euroList) {
 }
 
 const sourceList = document.querySelector("#sourceList");
-if (sourceList) {
-  sourceList.innerHTML = sourceRegistry
+function renderSourceList(items = currentNewsItems) {
+  if (!sourceList) return;
+
+  const sourceCounts = new Map();
+  items.forEach((item) => {
+    const name = item.sourceName || "Unknown source";
+    const current = sourceCounts.get(name) ?? { name, type: item.sourceType || "RSS", count: 0 };
+    current.count += 1;
+    sourceCounts.set(name, current);
+  });
+  const sources = sourceCounts.size
+    ? [...sourceCounts.values()]
+    : sourceRegistry.map((source) => ({ ...source, count: 0 }));
+
+  sourceList.innerHTML = sources
     .map(
       (source) => `
         <article class="source-row">
           <div>
             <strong>${source.name}</strong>
-            <small>${source.type} · trust ${source.trustScore}</small>
+            <small>${source.type} · ${source.count} รายการ</small>
           </div>
-          <span class="source-status ${source.status}">${source.status}</span>
-          <small>ล่าสุด ${source.lastFetched}</small>
+          <span class="source-status active">active</span>
+          <small>อัปเดต ${new Date().toLocaleTimeString("th-TH", { hour: "2-digit", minute: "2-digit" })}</small>
         </article>
       `,
     )
@@ -710,7 +723,7 @@ function updateRefreshStamp(mode = "manual") {
   const dateLine = document.querySelector(".date-line");
   if (!dateLine) return;
 
-  const sourceCount = sourceRegistry.length;
+  const sourceCount = new Set(currentNewsItems.map((item) => item.sourceName).filter(Boolean)).size;
   const newsCount = currentNewsItems.length;
   const rumorCount = currentRumors.length;
   const languageLabel = languageMode === "original" ? "ต้นฉบับ" : "ภาษาไทย";
@@ -794,8 +807,7 @@ if (autoRefreshSelect) {
     }
 
     autoRefreshTimer = window.setInterval(() => {
-      renderNews(leagueFilter?.value ?? "All");
-      updateRefreshStamp("auto");
+      loadLiveData("auto");
     }, seconds * 1000);
 
     updateRefreshStamp("manual");
@@ -808,7 +820,7 @@ if (search) {
     event.preventDefault();
     const term = event.currentTarget.querySelector("input").value.trim().toLowerCase();
     if (!term) {
-      renderNews(leagueFilter.value);
+      renderNews(leagueFilter?.value ?? "All");
       return;
     }
 
@@ -880,6 +892,7 @@ async function loadLiveData(mode = "manual") {
   renderNews(leagueFilter?.value ?? "All");
   renderHotNews(currentNewsItems);
   renderRumors();
+  renderSourceList(currentNewsItems);
   updateRefreshStamp(mode);
 }
 
@@ -900,4 +913,5 @@ renderTeamDetail();
 renderPlayers();
 renderLeagues();
 renderLeagueDetail();
+renderSourceList();
 loadLiveData();
