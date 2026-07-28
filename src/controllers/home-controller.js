@@ -7,6 +7,7 @@ let autoRefreshTimer = null;
 let currentNewsItems = newsItems;
 let currentRumors = rumors;
 let currentFixtureItems = [];
+let currentNewsPage = 1;
 let currentRumorPage = 1;
 let languageMode = localStorage.getItem("befootball-news-language") ?? "th";
 const xJournalists = [
@@ -146,9 +147,13 @@ function renderNews(filter = "All") {
   if (!newsList) return;
 
   const filtered = filter === "All" ? currentNewsItems : currentNewsItems.filter((item) => item.league === filter);
+  const pageSize = newsPagination ? 20 : filtered.length;
+  const totalPages = Math.max(1, Math.ceil(filtered.length / pageSize));
+  currentNewsPage = Math.min(Math.max(currentNewsPage, 1), totalPages);
+  const pageItems = filtered.slice((currentNewsPage - 1) * pageSize, currentNewsPage * pageSize);
 
-  newsList.innerHTML = filtered.length
-    ? filtered
+  newsList.innerHTML = pageItems.length
+    ? pageItems
     .map(
       (item) => `
         <article class="news-item">
@@ -164,6 +169,26 @@ function renderNews(filter = "All") {
     )
     .join("")
     : `<article class="news-item"><time class="news-time">-</time><div><h3>ยังไม่มีข่าวในหมวดนี้</h3><p>ข่าว RSS บางชิ้นไม่มีข้อมูลลีกชัดเจน ระบบจะแยกจากชื่อทีม/ลีกเมื่อพบ keyword ที่ตรงกัน</p></div><span class="news-badge">${filter}</span></article>`;
+
+  renderNewsPagination(totalPages);
+}
+
+const newsPagination = document.querySelector("#newsPagination");
+function renderNewsPagination(totalPages) {
+  if (!newsPagination) return;
+
+  const links = Array.from({ length: totalPages }, (_, index) => {
+    const page = index + 1;
+    return `<a class="${page === currentNewsPage ? "active" : ""}" href="#" data-news-page="${page}">${page}</a>`;
+  });
+  if (currentNewsPage > 1) {
+    links.unshift(`<a href="#" data-news-page="${currentNewsPage - 1}">ก่อนหน้า</a>`);
+  }
+  if (currentNewsPage < totalPages) {
+    links.push(`<a href="#" data-news-page="${currentNewsPage + 1}">ถัดไป</a>`);
+  }
+
+  newsPagination.innerHTML = links.join("");
 }
 
 const hotNewsNode = document.querySelector("#hotNews");
@@ -693,7 +718,10 @@ function updateRefreshStamp(mode = "manual") {
 }
 
 if (leagueFilter) {
-  leagueFilter.addEventListener("change", (event) => renderNews(event.target.value));
+  leagueFilter.addEventListener("change", (event) => {
+    currentNewsPage = 1;
+    renderNews(event.target.value);
+  });
 }
 
 document.querySelectorAll("[data-filter-link]").forEach((link) => {
@@ -701,10 +729,22 @@ document.querySelectorAll("[data-filter-link]").forEach((link) => {
     event.preventDefault();
     if (!leagueFilter) return;
     leagueFilter.value = link.dataset.filterLink;
+    currentNewsPage = 1;
     renderNews(link.dataset.filterLink);
     document.querySelectorAll("[data-filter-link]").forEach((item) => item.classList.toggle("active", item === link));
   });
 });
+
+if (newsPagination) {
+  newsPagination.addEventListener("click", (event) => {
+    const link = event.target.closest("[data-news-page]");
+    if (!link) return;
+    event.preventDefault();
+    currentNewsPage = Number(link.dataset.newsPage) || 1;
+    renderNews(leagueFilter?.value ?? "All");
+    newsList.scrollIntoView({ behavior: "smooth", block: "start" });
+  });
+}
 
 const teamDetailTabs = document.querySelector("#teamDetailTabs");
 if (teamDetailTabs) {
