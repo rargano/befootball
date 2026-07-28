@@ -444,13 +444,72 @@ function renderLeagues(rows = []) {
 
   leaguesGrid.innerHTML = data
     .map((league) => `
-      <a class="entity-card" href="league-detail.html">
+      <a class="entity-card" href="league-detail.html?league=${encodeURIComponent(league.code)}">
         <span class="crest ${league.status === "live" ? "red" : ""}">${league.code.split(".")[0].toUpperCase()}</span>
         <strong>${league.name}</strong>
         <small>${league.country} · ${league.status === "live" ? "เชื่อมข้อมูลแล้ว" : "รอต่อข้อมูล"} · ${league.source}</small>
       </a>
     `)
     .join("");
+}
+
+const leagueDetail = document.querySelector("#leagueDetail");
+function renderLeagueDetail(standingsRows = [], leagueRows = []) {
+  if (!leagueDetail) return;
+
+  const params = new URLSearchParams(window.location.search);
+  const selectedCode = params.get("league") ?? "eng.1";
+  const fallbackLeagues = [
+    { code: "eng.1", name: "Premier League", country: "England", status: "live", source: "ESPN public data" },
+    { code: "esp.1", name: "LaLiga", country: "Spain", status: "planned", source: "เตรียมต่อข้อมูล" },
+    { code: "ita.1", name: "Serie A", country: "Italy", status: "planned", source: "เตรียมต่อข้อมูล" },
+    { code: "ger.1", name: "Bundesliga", country: "Germany", status: "planned", source: "เตรียมต่อข้อมูล" },
+  ];
+  const leagues = leagueRows.length ? leagueRows : fallbackLeagues;
+  const league = leagues.find((item) => item.code === selectedCode) ?? leagues[0];
+  const title = leagueDetail.querySelector("#leagueDetailName");
+  const meta = leagueDetail.querySelector("#leagueDetailMeta");
+  const summary = leagueDetail.querySelector("#leagueDetailSummary");
+  const crest = leagueDetail.querySelector("#leagueDetailCrest");
+  const rows = leagueDetail.querySelector("#leagueStandingRows");
+  const news = leagueDetail.querySelector("#leagueNewsList");
+
+  document.title = `${league.name} | beFootball`;
+  if (title) title.textContent = league.name;
+  if (meta) meta.innerHTML = `<a href="leagues.html">ลีก</a> / ${league.country}`;
+  if (summary) {
+    summary.textContent = league.status === "live"
+      ? `${league.name} เชื่อมข้อมูล standings และโปรแกรมจาก ${league.source}`
+      : `${league.name} อยู่ในแผนต่อข้อมูลเพิ่ม ตอนนี้แสดงสถานะลีกไว้ก่อน`;
+  }
+  if (crest) crest.textContent = league.code.split(".")[0].toUpperCase();
+
+  if (rows) {
+    rows.innerHTML = standingsRows.length && league.code === "eng.1"
+      ? standingsRows.slice(0, 20).map((row) => `
+        <tr>
+          <td><span class="rank">${row.rank}</span><a href="team-detail.html?team=${slugify(row.team)}">${row.team}</a></td>
+          <td>${row.played}</td>
+          <td>${row.won ?? 0}</td>
+          <td>${row.points}</td>
+        </tr>
+      `).join("")
+      : `<tr><td colspan="4">ยังไม่มี standings live สำหรับลีกนี้</td></tr>`;
+  }
+
+  if (news) {
+    const related = currentNewsItems
+      .filter((item) => league.code === "eng.1" ? item.league === "England" : item.league === "All")
+      .slice(0, 5);
+    news.innerHTML = related.length
+      ? related.map((item) => `
+        <a href="article-detail.html">
+          ${item.title}
+          <small>${item.sourceName ?? "RSS"} · ${item.badge}</small>
+        </a>
+      `).join("")
+      : `<span class="empty-copy">ยังไม่มีข่าวที่จับคู่กับลีกนี้</span>`;
+  }
 }
 
 const teamDetail = document.querySelector("#teamDetail");
@@ -654,6 +713,7 @@ async function loadLiveData(mode = "manual") {
     renderTeamDetail(liveTeams);
     renderPlayers(livePlayers);
     renderLeagues(liveLeagues);
+    renderLeagueDetail(liveStandings, liveLeagues);
   } catch (error) {
     console.warn(`Using local mock data: ${error.message}`);
     currentNewsItems = newsItems;
@@ -666,6 +726,7 @@ async function loadLiveData(mode = "manual") {
     renderTeamDetail();
     renderPlayers([]);
     renderLeagues([]);
+    renderLeagueDetail();
   }
 
   renderNews(leagueFilter?.value ?? "All");
@@ -690,4 +751,5 @@ renderTeams();
 renderTeamDetail();
 renderPlayers();
 renderLeagues();
+renderLeagueDetail();
 loadLiveData();
